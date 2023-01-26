@@ -46,6 +46,14 @@ The docker compose maps the following services by default:
 * indexer-db: 5433
 * pathfinder-proxy: 8080
 
+## Preparation
+Before you run the setup for the first time, you need to install the dependencies of the 'other-blockchain-user' image.
+```bash
+cd modules/other-blockchain-user
+npm install
+cd ../..
+```
+
 ## Running the setup
 To run the setup, simply run `docker-compose up` in the root directory of this repository. This will start all services and
 initialize the databases. On the first run, it might take up to a few minutes until the api-server is ready to accept requests.
