@@ -1,0 +1,187 @@
+services:
+
+  indexer-db:
+    image: postgres:15
+    restart: unless-stopped
+    ports:
+      - 5433:5432
+    networks:
+      - internal
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: index
+    volumes:
+      - ${PWD}/.state/indexer-db/pg_data:/var/lib/postgresql/data
+
+  indexer-db-init:
+    build:
+      dockerfile: modules/indexer-db-init/Dockerfile
+      context: .
+    depends_on:
+      - indexer-db
+    networks:
+      - internal
+    environment:
+      POSTGRES_HOST: indexer-db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: index
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  api-db:
+    image: postgis/postgis:15-3.3
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    networks:
+      - internal
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: api
+    volumes:
+      - ${PWD}/.state/api-db/pg_data:/var/lib/postgresql/data
+
+  api-db-init:
+    build:
+      dockerfile: modules/api-db-init/Dockerfile
+      context: .
+    depends_on:
+      - api-db
+    networks:
+      - internal
+    environment:
+      POSTGRES_HOST: api-db
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: api
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  api-server:
+    image: circlesubi/api-server:dev
+    restart: unless-stopped
+    depends_on:
+      - api-db-init
+      - indexer-db-init
+      - ganache
+      - blockchain-indexer
+    networks:
+      - internal
+    ports:
+      - 8989:8989
+    environment:
+      APP_ID: api-server-local
+      APP_URL: http://localhost:5000/;
+      BLOCKCHAIN_INDEX_DB_CONNECTION_STRING: postgresql://readonly_user:postgres@indexer-db:5432/index
+      BLOCKCHAIN_INDEX_WS_URL: ws://blockchain-indexer:8675
+      BUCKET_ENDPOINT: fra1.digitaloceanspaces.com
+      BUCKET_KEY: 1234
+      BUCKET_SECRET: 1234
+      CONNECTION_STRING_RO: postgresql://postgres:postgres@api-db/api
+      CONNECTION_STRING_RW: postgresql://postgres:postgres@api-db/api
+      CORS_ORIGINS: http://localhost:5000
+      DEBUG: true
+      DELAY_START: 0
+      EXTERNAL_DOMAIN: localhost
+      INVITATION_FUNDS_SAFE_ADDRESS: 0x5E484da6227AB3BA047121742ee766CC6389db4f
+      INVITATION_FUNDS_SAFE_KEY: 0x00
+      OPERATOR_ORGANISATION_ADDRESS: 0x5E484da6227AB3BA047121742ee766CC6389db4f
+      CIRCLES_HUB_ADDRESS: 0x5528544b97869ce105Be00fcCF250f659e787034
+      MAIL_FROM: notifcations@circles.land
+      PATHFINDER_URL: http://pathfinder2
+      RPC_GATEWAY_URL: http://ganache:8545
+      SMTP_DEBUG: true
+      SMTP_HOST: smtp.example.com
+      SMTP_PASSWORD: 123
+      SMTP_PORT: 465
+      SMTP_USER: mail_sender
+
+
+  # Master safe address is: 0x5E484da6227AB3BA047121742ee766CC6389db4f
+  # Safe factory address is: 0xD5E7d393226A6e9089601080E4b92BcaF536BaDA
+  blockchain-indexer:
+    image: ghcr.io/circlesland/blockchain-indexer:0.0.67
+    expose:
+      - 8675
+    depends_on:
+      - ganache
+      - indexer-db
+    restart: unless-stopped
+    networks:
+      - internal
+    ports:
+      - 8675:8675
+    environment:
+      INDEXER_WEBSOCKET_URL: http://0.0.0.0:8675
+      INDEXER_RPC_GATEWAY_URL: http://ganache:8545
+      HUB_ADDRESS: 0x5528544b97869ce105Be00fcCF250f659e787034
+      INDEXER_CONNECTION_STRING: Server=indexer-db;Port=5432;Database=index;User ID=postgres;Password=postgres;Command Timeout=240;
+
+  ganache:
+    build:
+      dockerfile: ${PWD}/modules/ganache/Dockerfile
+      context: ${PWD}/modules/ganache
+    expose:
+      - 8545
+    networks:
+      - internal
+    ports:
+      - 8545:8545
+
+  other-blockchain-user:
+    restart: unless-stopped
+    build:
+      dockerfile: ${PWD}/modules/other_chain_user/Dockerfile
+      context: ${PWD}/modules/other_chain_user
+    depends_on:
+      - ganache
+    networks:
+      - internal
+    environment:
+      RPC_URL: http://ganache:8545
+      TO_ADDRESS: 0x746569b36d8a37aBa15cBAAa31cBcc093251D50B
+      PRIVATE_KEY: 0x8a49c61f64ed99f8a59a9bd62cd39238f7256beead025b86e25476e329637b93
+
+  pathfinder2-updater:
+    depends_on:
+      - pathfinder2
+      - blockchain-indexer
+    image: circlesubi/pathfinder2-updater:dev
+    restart: unless-stopped
+    networks:
+      - internal
+    environment:
+      INDEXER_DB_CONNECTION_STRING: Server=indexer-db;Port=5432;Database=index;User ID=postgres;Password=postgres;Command Timeout=240;
+      INDEXER_WS_URL: ws://blockchain-indexer:8675
+      INTERNAL_CAPACITY_GRAPH_PATH: /var/pathfinder2/data/capacity_graph.db
+      EXTERNAL_CAPACITY_GRAPH_PATH: /var/pathfinder2/data/capacity_graph.db
+      PATHFINDER_RPC_URL: http://pathfinder2:54389
+    volumes:
+      - ${PWD}/.state/pathfinder:/var/pathfinder2/data
+
+  pathfinder2:
+    image: circlesubi/pathfinder2:eeee335
+    restart: unless-stopped
+    networks:
+      - internal
+    expose:
+      - "54389"
+    command:
+      - "0.0.0.0:54389"
+    volumes:
+      - ${PWD}/.state/pathfinder:/var/pathfinder2/data
+
+  pathfinder-proxy:
+    image: circlesubi/pathfinder-proxy:dev
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    networks:
+      - internal
+    environment:
+      PORT: 80
+      CORS_ORIGINS: https://circles.land
+      UPSTREAM_SERVICE_ENDPOINTS: http://pathfinder2:54389
+      UPSTREAM_HEALTH_ENDPOINTS: http://pathfinder2-updater:8794
+
+networks:
+  internal:
