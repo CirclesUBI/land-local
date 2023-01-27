@@ -37,6 +37,9 @@ when it didn't receive a new transaction for a while).
 ### ganache
 This image runs a ganache instance with all circles contracts pre-deployed.
 
+### frontend
+Pulls the o-platform repository and builds the frontend. Then uses nginx to serve the svelte app.
+
 ## Port mappings
 The docker compose maps the following services by default:
 * api-server: 8989
@@ -44,26 +47,45 @@ The docker compose maps the following services by default:
 * ganache: 8545
 * api-db: 5432
 * indexer-db: 5433
-* pathfinder-proxy: 8080
+* pathfinder-proxy: 8081
+* frontend: 8080
 
 ## Preparation
+### Install dependencies
 Before you run the setup for the first time, you need to install the dependencies of the 'other-blockchain-user' image.
 ```bash
-cd modules/other-blockchain-user
+cd modules/other_chain_user
 npm install
 cd ../..
 ```
 
+### Configure the initial user
+Because the local environment comes with an own ganache chain, the existing safes and wallets are not available.
+The system requires 
+
+
+
 ## Running the setup
-To run the setup, simply run `docker-compose up` in the root directory of this repository. This will start all services and
+To run the setup, simply run `docker compose up` in the root directory of this repository. This will start all services and
 initialize the databases. On the first run, it might take up to a few minutes until the api-server is ready to accept requests.
 
 ### Runtime state
 All volumes are mounted to the `.state` directory in the root of this repository. This means that the state of the setup
-will be persisted between runs. If you want to start from scratch, run the following command.
+will be persisted between runs. If you want to start from scratch, run the following commands.
 ```
 docker compose down \
  && sudo rm -r -f .state \
- && docker compose build --no-cache api-db-init indexer-db-init other-blockchain-user ganache \
- && docker compose up
+ && docker compose build --no-cache api-db-init indexer-db-init other-blockchain-user ganache
+docker compose up
 ```
+
+## Developing using this setup
+There are generally two ways to work with this setup:
+* **Replace the images of the services you want to work on with your local version:**  
+  You can either build the images locally or you pull your versions from a docker registry.
+* **Change the configuration so that it points to a component you run on your machine:**  
+  You can change the configuration of the other components to point to your local version of a component.
+  E.g. if you want to work on the api-server, you can change the configuration of the frontend to point to your local 
+  api-server. Your local api-server has to use the api-db, indexer-db, ganache, pathfinder, etc. from the docker compose setup.
+  It might be necessary to create an entry in your hosts file to make it easier to resolve the local component from within
+  the docker compose environment

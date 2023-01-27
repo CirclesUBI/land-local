@@ -9,10 +9,9 @@ GnosisSafe.setProvider(web3.currentProvider);
 ProxyFactory.setProvider(web3.currentProvider);
 
 module.exports = async function (deployer, network, accounts) {
-  await deployer.deploy(GnosisSafe, { from: accounts[0] }).then(result => {
-    console.log("Master safe address is:", result.address);
-  });
-  return deployer.deploy(ProxyFactory, { from: accounts[0] }).then(result => {
-    console.log("Safe factory address is:", result.address);
-  });
+    const masterSafeContract = (await deployer.deploy(GnosisSafe, {from: accounts[0]}).then(result => result.address));
+    console.log("Master safe address is:", masterSafeContract);
+
+    const proxyFactoryContract = (await deployer.deploy(ProxyFactory, {from: accounts[0]}).then(result => result.address));
+    console.log("Safe factory address is:", proxyFactoryContract);
 };

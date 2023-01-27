@@ -1,4 +1,7 @@
 #!/bin/bash
+cp -r -f app/ganache-seed-db/* /var/ganache-db/*
+rm -r -f app/ganache-seed-db/
+
 node /app/dist/node/cli.js \
   --logging.debug=true \
   -v \

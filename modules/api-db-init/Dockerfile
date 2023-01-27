@@ -1,6 +1,8 @@
 FROM ubuntu:latest
 
-COPY modules/api-db-init/seed.sh seed.sh
+COPY seed.sh seed.sh
+COPY initial_user.sql initial_user.sql
+COPY initial_business_categories.sql initial_business_categories.sql
 
 RUN apt update
 RUN apt install -y gettext-base git postgresql-client

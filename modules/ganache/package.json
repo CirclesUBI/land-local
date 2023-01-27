@@ -1,0 +1,17 @@
+{
+  "name": "ganache",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@truffle/contract": "^4.6.13",
+    "truffle": "^5.7.4",
+    "web3": "^1.8.1"
+  }
+}
