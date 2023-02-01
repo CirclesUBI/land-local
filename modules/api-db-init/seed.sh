@@ -15,7 +15,7 @@ git clone https://github.com/CirclesUBI/api-server.git
 cd api-server
 git checkout dev
 
-ls src/api-db-migrations/*.sql | xargs -I% sh -c 'psql ${CONNECTION_STRING_ROOT} << envsubst < %'
+for i in {1..3}; do ((ls src/api-db-migrations/*.sql | xargs -I% sh -c 'psql ${CONNECTION_STRING_ROOT} << envsubst < %') && break) || sleep 10; done
 
 cd ..
 rm -r -f api-server

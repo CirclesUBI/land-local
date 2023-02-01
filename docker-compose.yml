@@ -13,21 +13,6 @@ services:
     volumes:
       - ${PWD}/.state/indexer-db/pg_data:/var/lib/postgresql/data
 
-  indexer-db-init:
-    build:
-      dockerfile: ${PWD}/modules/indexer-db-init/Dockerfile
-      context: ${PWD}/modules/indexer-db-init
-    depends_on:
-      - indexer-db
-    networks:
-      - internal
-    environment:
-      POSTGRES_HOST: 'indexer-db'
-      POSTGRES_PORT: '5432'
-      POSTGRES_DB: 'index'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'postgres'
-
   api-db:
     image: postgis/postgis:15-3.3
     restart: unless-stopped
@@ -40,28 +25,6 @@ services:
       POSTGRES_DB: 'api'
     volumes:
       - ${PWD}/.state/api-db/pg_data:/var/lib/postgresql/data
-
-  api-db-init:
-    build:
-      dockerfile: ${PWD}/modules/api-db-init/Dockerfile
-      context: ${PWD}/modules/api-db-init
-    depends_on:
-      - api-db
-    networks:
-      - internal
-    environment:
-      POSTGRES_HOST: 'api-db'
-      POSTGRES_PORT: '5432'
-      POSTGRES_DB: 'api'
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'postgres'
-      INITIAL_USER_SAFE_ADDRESS: '0x3Ac100f2EF20Ab4c6fdf6594Ba633C13e3f06b44'
-      INITIAL_USER_SAFE_OWNER_ADDRESS: '0x85a88313b37676ef7F846E00287090E75931E44B'
-      INITIAL_ORG_SAFE_ADDRESS: '0x2D76A8369d71FD018540c008EC0b456076985833'
-      INITIAL_ORG_SAFE_OWNER_ADDRESS: '0x85a88313b37676ef7F846E00287090E75931E44B '
-      INITIAL_USER_NAME: 'root'
-      INITIAL_USER_EMAIL: 'root@example.com'
-      APP_URL: 'http://localhost:8080'
 
   api-server:
     image: circlesubi/api-server:dev
@@ -76,7 +39,7 @@ services:
       - 8989:8989
     environment:
       APP_ID: 'api-server-local'
-      APP_URL: 'http://localhost:8080/;'
+      APP_URL: 'http://localhost:8080/'
       BLOCKCHAIN_INDEX_DB_CONNECTION_STRING: 'postgresql://readonly_user:postgres@indexer-db:5432/index'
       BLOCKCHAIN_INDEX_WS_URL: 'ws://blockchain-indexer:8675'
       BUCKET_ENDPOINT: 'http://minio:9000'
@@ -84,7 +47,7 @@ services:
       BUCKET_SECRET: 'ffw3jiwienvqncyewosaqwncxaxcf23ncsdnj'
       CONNECTION_STRING_RO: 'postgresql://postgres:postgres@api-db/api'
       CONNECTION_STRING_RW: 'postgresql://postgres:postgres@api-db/api'
-      CORS_ORIGINS: 'http://localhost:8080'
+      CORS_ORIGINS: 'http://localhost:8080;http://localhost:5000;http://${IP_ADDRESS}:8080'
       DEBUG: 'true'
       DELAY_START: '0'
       EXTERNAL_DOMAIN: 'localhost'
@@ -142,6 +105,43 @@ services:
       context: ${PWD}/modules/ganache-init
     networks:
       - internal
+
+  api-db-init:
+    build:
+      dockerfile: ${PWD}/modules/api-db-init/Dockerfile
+      context: ${PWD}/modules/api-db-init
+    depends_on:
+      - api-db
+    networks:
+      - internal
+    environment:
+      POSTGRES_HOST: 'api-db'
+      POSTGRES_PORT: '5432'
+      POSTGRES_DB: 'api'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      INITIAL_USER_SAFE_ADDRESS: '0x3Ac100f2EF20Ab4c6fdf6594Ba633C13e3f06b44'
+      INITIAL_USER_SAFE_OWNER_ADDRESS: '0x85a88313b37676ef7F846E00287090E75931E44B'
+      INITIAL_ORG_SAFE_ADDRESS: '0x2D76A8369d71FD018540c008EC0b456076985833'
+      INITIAL_ORG_SAFE_OWNER_ADDRESS: '0x85a88313b37676ef7F846E00287090E75931E44B '
+      INITIAL_USER_NAME: 'root'
+      INITIAL_USER_EMAIL: 'root@example.com'
+      APP_URL: 'http://localhost:8080'
+
+  indexer-db-init:
+    build:
+      dockerfile: ${PWD}/modules/indexer-db-init/Dockerfile
+      context: ${PWD}/modules/indexer-db-init
+    depends_on:
+      - indexer-db
+    networks:
+      - internal
+    environment:
+      POSTGRES_HOST: 'indexer-db'
+      POSTGRES_PORT: '5432'
+      POSTGRES_DB: 'index'
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
 
   other-blockchain-user:
     restart: unless-stopped
@@ -204,16 +204,17 @@ services:
       dockerfile: ${PWD}/modules/frontend/Dockerfile
       context: ${PWD}/modules/frontend
       args:
-        API_ENDPOINT: 'http://localhost:8989'
+        API_ENDPOINT: 'http://${IP_ADDRESS}:8989'
         CIRCLES_SUBGRAPH_ENDPOINT: 'https://api.thegraph.com/subgraphs/name/circlesubi/circles'
         PATHFINDER_ENDPOINT: 'http://localhost:8081'
         CIRCLES_HUB_ADDRESS: '0x5528544b97869ce105Be00fcCF250f659e787034'
         SAFE_PROXY_FACTORY_ADDRESS: '0xD5E7d393226A6e9089601080E4b92BcaF536BaDA'
         SAFE_ADDRESS: '0x5E484da6227AB3BA047121742ee766CC6389db4f'
-        RPC_ENDPOINT: 'http://localhost:8545'
+        RPC_ENDPOINT: 'http://${IP_ADDRESS}:8545'
         OPENLOGIN_CLIENT_ID: 'BHqazms23gbTZQ2fYvvUaFzv718Ft8Ox1XwSEqVt81jtZJRQRb-N5cnThtZGSjZF9Dtj9MQxkEQTUo47I_wiihE'
         HERE_API_KEY: 'fhiIkoASi1B-z8R7ytKBnfJltOpaUlYBV1kydXyK1sE'
         PLACES_API_KEY: 'AIzaSyDAh2mCO36_qBtbb00QY3IPGKUsunbBj'
+        USE_MOCKS: 'true'
     networks:
       - internal
     ports:
