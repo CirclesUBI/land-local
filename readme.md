@@ -16,7 +16,8 @@ Most of the images used in this setup are built from Dockerhub. However, some of
 * api-db-init
 * indexer-db-init
 * other-blockchain-user
-* ganache  
+* ganache
+* ganache-init
 
 This is because the above images all need initialization before they can be used. 
 
@@ -36,6 +37,10 @@ when it didn't receive a new transaction for a while).
 
 ### ganache
 This image runs a ganache instance with all circles contracts pre-deployed.
+
+### ganache-init
+This image is used to initialize the ganache instance. It contains a 'init.sh' script which deploys the circles contracts
+and the first safe.
 
 ### frontend
 Pulls the o-platform repository and builds the frontend. Then uses nginx to serve the svelte app.
@@ -61,13 +66,14 @@ cd ../..
 
 ### Configure the initial user
 Because the local environment comes with an own ganache chain, the existing safes and wallets are not available.
-The system requires 
+A new safe, key and profile hast to be created. This happens automatically in the initialization of the api-db (api-db-init) and ganache (ganache-init).  
 
 
 
 ## Running the setup
 To run the setup, simply run `docker compose up` in the root directory of this repository. This will start all services and
 initialize the databases. On the first run, it might take up to a few minutes until the api-server is ready to accept requests.
+It will restart continuously until all dependencies are available. This is normal and will stop once all dependencies are available.
 
 ### Runtime state
 All volumes are mounted to the `.state` directory in the root of this repository. This means that the state of the setup
@@ -75,7 +81,7 @@ will be persisted between runs. If you want to start from scratch, run the follo
 ```
 docker compose down \
  && sudo rm -r -f .state \
- && docker compose build --no-cache api-db-init indexer-db-init other-blockchain-user ganache
+ && docker compose build --no-cache api-db-init indexer-db-init other-blockchain-user ganache  ganache-init
 docker compose up
 ```
 

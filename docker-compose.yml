@@ -68,10 +68,8 @@ services:
     restart: unless-stopped
     depends_on:
       - api-db-init
-      - indexer-db-init
-      - ganache
+      - ganache-init
       - blockchain-indexer
-      - minio
     networks:
       - internal
     ports:
@@ -111,7 +109,7 @@ services:
       - 8675
     depends_on:
       - ganache
-      - indexer-db
+      - indexer-db-init
     restart: unless-stopped
     networks:
       - internal
@@ -135,6 +133,15 @@ services:
       - 8545:8545
     volumes:
       - ${PWD}/.state/ganache:/var/ganache-db
+
+  ganache-init:
+    depends_on:
+      - ganache
+    build:
+      dockerfile: ${PWD}/modules/ganache-init/Dockerfile
+      context: ${PWD}/modules/ganache-init
+    networks:
+      - internal
 
   other-blockchain-user:
     restart: unless-stopped
@@ -214,6 +221,8 @@ services:
 
   minio:
     image: minio/minio:latest
+    networks:
+      - internal
     entrypoint: sh
     command: -c 'mkdir -p /export/images && /usr/bin/minio server /export'
     environment:

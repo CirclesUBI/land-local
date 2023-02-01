@@ -1,7 +1,7 @@
 const Web3 = require("web3");
-const proxyArtifacts = require('/app/contracts/build/contracts/ProxyFactory.json');
+const proxyArtifacts = require('/app/contracts/build/contracts/GnosisSafeProxyFactory.json');
 
-const web3Provider = new Web3.providers.HttpProvider('http://localhost:8545');
+const web3Provider = new Web3.providers.HttpProvider('http://ganache:8545');
 const web3Instance = new Web3(web3Provider);
 const account = web3Instance.eth.accounts.privateKeyToAccount("0x5bc6328efff9fc724aad89edf1356a6ba7bee56368b4b9b47b1f29a5cd6d73c7");
 
@@ -27,7 +27,7 @@ async function createSafe() {
             continue;
         }
 
-        const proxyCreatedEvent = this.web3.eth.abi.decodeLog(
+        const proxyCreatedEvent = web3Instance.eth.abi.decodeLog(
             [
                 {
                     name: "proxy",
