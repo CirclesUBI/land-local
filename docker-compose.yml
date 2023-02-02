@@ -31,7 +31,7 @@ services:
     restart: unless-stopped
     depends_on:
       - api-db-init
-      - ganache-init
+      - ganache
       - blockchain-indexer
     networks:
       - internal
@@ -54,7 +54,7 @@ services:
       INVITATION_FUNDS_SAFE_ADDRESS: '0x0bBE70Ac8D707EA1b65A03c7911BaD9A4b9f277A'
       INVITATION_FUNDS_SAFE_KEY: '0x5bc6328efff9fc724aad89edf1356a6ba7bee56368b4b9b47b1f29a5cd6d73c7'
       OPERATOR_ORGANISATION_ADDRESS: '0x2D76A8369d71FD018540c008EC0b456076985833'
-      CIRCLES_HUB_ADDRESS: '0x5528544b97869ce105Be00fcCF250f659e787034'
+      CIRCLES_HUB_ADDRESS: '0x29b9a7fbb8995b2423a71cc17cf9810798f6c543'
       MAIL_FROM: 'notifcations@circles.land'
       PATHFINDER_URL: 'http://pathfinder2'
       RPC_GATEWAY_URL: 'http://ganache:8545'
@@ -81,13 +81,13 @@ services:
     environment:
       INDEXER_WEBSOCKET_URL: 'http://0.0.0.0:8675'
       INDEXER_RPC_GATEWAY_URL: 'http://ganache:8545'
-      HUB_ADDRESS: '0x5528544b97869ce105Be00fcCF250f659e787034'
+      HUB_ADDRESS: '0x29b9a7fbb8995b2423a71cc17cf9810798f6c543'
       INDEXER_CONNECTION_STRING: 'Server=indexer-db;Port=5432;Database=index;User ID=postgres;Password=postgres;Command Timeout=240;'
 
   ganache:
     build:
-      dockerfile: ${PWD}/modules/ganache/Dockerfile
-      context: ${PWD}/modules/ganache
+      dockerfile: ${PWD}/modules/ganache-fork/Dockerfile
+      context: ${PWD}/modules/ganache-fork
     expose:
       - 8545
     networks:
@@ -96,15 +96,6 @@ services:
       - 8545:8545
     volumes:
       - ${PWD}/.state/ganache:/var/ganache-db
-
-  ganache-init:
-    depends_on:
-      - ganache
-    build:
-      dockerfile: ${PWD}/modules/ganache-init/Dockerfile
-      context: ${PWD}/modules/ganache-init
-    networks:
-      - internal
 
   api-db-init:
     build:
@@ -207,9 +198,9 @@ services:
         API_ENDPOINT: 'http://${IP_ADDRESS}:8989'
         CIRCLES_SUBGRAPH_ENDPOINT: 'https://api.thegraph.com/subgraphs/name/circlesubi/circles'
         PATHFINDER_ENDPOINT: 'http://localhost:8081'
-        CIRCLES_HUB_ADDRESS: '0x5528544b97869ce105Be00fcCF250f659e787034'
-        SAFE_PROXY_FACTORY_ADDRESS: '0xD5E7d393226A6e9089601080E4b92BcaF536BaDA'
-        SAFE_ADDRESS: '0x5E484da6227AB3BA047121742ee766CC6389db4f'
+        CIRCLES_HUB_ADDRESS: '0x29b9a7fbb8995b2423a71cc17cf9810798f6c543'
+        SAFE_PROXY_FACTORY_ADDRESS: '0xa6B71E26C5e0845f74c812102Ca7114b6a896AB2'
+        SAFE_ADDRESS: '0x3E5c63644E683549055b9Be8653de26E0B4CD36E'
         RPC_ENDPOINT: 'http://${IP_ADDRESS}:8545'
         OPENLOGIN_CLIENT_ID: 'BHqazms23gbTZQ2fYvvUaFzv718Ft8Ox1XwSEqVt81jtZJRQRb-N5cnThtZGSjZF9Dtj9MQxkEQTUo47I_wiihE'
         HERE_API_KEY: 'fhiIkoASi1B-z8R7ytKBnfJltOpaUlYBV1kydXyK1sE'
