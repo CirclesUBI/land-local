@@ -56,6 +56,10 @@ The docker compose maps the following services by default:
 * frontend: 8080
 
 ## Preparation
+### execute run.sh
+Please note, on MacOS change: export IP_ADDRESS=$(ip route get 1 | sed 's/^.*src \([^ ]*\).*$/\1/;q') to:
+export IP_ADDRESS=$(route get 1 | sed 's/^.*src \([^ ]*\).*$/\1/;q')
+
 ### Install dependencies
 Before you run the setup for the first time, you need to install the dependencies of the 'other-blockchain-user' image.
 ```bash
