@@ -233,9 +233,11 @@ services:
     image: minio/minio:latest
     networks:
       - internal
-    entrypoint: sh
-    command: -c 'mkdir -p /export/images && /usr/bin/minio server /export'
+    command:
+      - server
+      - /data
     environment:
+      MINIO_ADDRESS: 0.0.0.0:9000
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
     ports:
