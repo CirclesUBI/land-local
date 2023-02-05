@@ -1,0 +1,72 @@
+@startuml
+!include <C4/C4_Container>
+
+WithoutPropertyHeader()
+AddProperty("ports", "5433:5432")
+AddProperty("db-name", "index")
+AddProperty("volume", "${PWD}/.state/indexer-db/pg_data")
+Container(indexer_db, "indexer-db")
+
+Container(indexer_db_init, "indexer-db-init")
+Rel_D(indexer_db_init, indexer_db, "depends-on", "")
+
+WithoutPropertyHeader()
+AddProperty("ports", "5432:5432")
+AddProperty("db-name", "api")
+AddProperty("volume", "${PWD}/.state/api-db/pg_data")
+Container(api_db, "api-db")
+Container(api_db_init, "api-db-init")
+Rel_D(api_db_init, api_db, "depends-on", "")
+
+WithoutPropertyHeader()
+AddProperty("ports", "8545:8545")
+AddProperty("volume", "${PWD}/.state/ganache")
+Container(ganache, "ganache")
+
+Container(ganache_init, "ganache-init")
+Rel_D(ganache_init, ganache, "depends-on", "")
+
+Container(other_blockchain_user, "other-blockchain-user")
+Rel_D(other_blockchain_user, ganache, "depends-on", "")
+
+WithoutPropertyHeader()
+AddProperty("ports", "8675:8675")
+Container(blockchain_indexer, "blockchain-indexer")
+Rel_D(blockchain_indexer, ganache_init, "depends-on", "")
+Rel_D(blockchain_indexer, indexer_db_init, "depends-on", "")
+
+WithoutPropertyHeader()
+AddProperty("volume", "${PWD}/.state/pathfinder")
+Container(pathfinder2, "pathfinder2")
+
+WithoutPropertyHeader()
+AddProperty("volume", "${PWD}/.state/pathfinder")
+Container(pathfinder2_updater, "pathfinder2-updater")
+Rel_D(pathfinder2_updater, pathfinder2, "depends-on", "")
+Rel_D(pathfinder2_updater, blockchain_indexer, "depends-on", "")
+
+WithoutPropertyHeader()
+AddProperty("ports", "8081:80")
+Container(pathfinder_proxy, "pathfinder-proxy")
+Rel_D(pathfinder_proxy, pathfinder2, "depends-on", "")
+Rel_D(pathfinder_proxy, pathfinder2_updater, "depends-on", "")
+
+WithoutPropertyHeader()
+AddProperty("ports", "8989:8989")
+Container(api_server, "api-server")
+Rel_D(api_server, api_db_init, "depends-on", "")
+Rel_D(api_server, ganache_init, "depends-on", "")
+Rel_D(api_server, blockchain_indexer, "depends-on", "")
+Rel_D(api_server, pathfinder_proxy, "depends-on", "")
+
+WithoutPropertyHeader()
+AddProperty("ports", "9000:9000")
+Container(minio, "minio")
+Rel_D(api_server, minio, "depends-on", "")
+
+WithoutPropertyHeader()
+AddProperty("ports", "8080:8080")
+Container(frontend, "frontend")
+Rel_D(frontend, api_server, "depends-on", "")
+
+@enduml

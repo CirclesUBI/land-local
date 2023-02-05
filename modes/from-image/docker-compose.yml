@@ -20,8 +20,8 @@ services:
 
   indexer-db-init:
     build:
-      dockerfile: ${PWD}/modules/indexer-db-init/Dockerfile
-      context: ${PWD}/modules/indexer-db-init
+      dockerfile: ${PWD}/../../modules/indexer-db-init/Dockerfile
+      context: ${PWD}/../../modules/indexer-db-init
     depends_on:
       - indexer-db
     networks:
@@ -53,8 +53,8 @@ services:
 
   api-db-init:
     build:
-      dockerfile: ${PWD}/modules/api-db-init/Dockerfile
-      context: ${PWD}/modules/api-db-init
+      dockerfile: ${PWD}/../../modules/api-db-init/Dockerfile
+      context: ${PWD}/../../modules/api-db-init
     depends_on:
       - api-db
     networks:
@@ -80,6 +80,7 @@ services:
       - api-db-init
       - ganache-init
       - blockchain-indexer
+      - pathfinder-proxy
     networks:
       - internal
     ports:
@@ -118,7 +119,7 @@ services:
     expose:
       - 8675
     depends_on:
-      - ganache
+      - ganache-init
       - indexer-db-init
     restart: unless-stopped
     networks:
@@ -133,8 +134,8 @@ services:
 
   ganache:
     build:
-      dockerfile: ${PWD}/modules/ganache/Dockerfile
-      context: ${PWD}/modules/ganache
+      dockerfile: ${PWD}/../../modules/ganache/Dockerfile
+      context: ${PWD}/../../modules/ganache
     expose:
       - 8545
     networks:
@@ -148,16 +149,16 @@ services:
     depends_on:
       - ganache
     build:
-      dockerfile: ${PWD}/modules/ganache-init/Dockerfile
-      context: ${PWD}/modules/ganache-init
+      dockerfile: ${PWD}/../../modules/ganache-init/Dockerfile
+      context: ${PWD}/../../modules/ganache-init
     networks:
       - internal
 
   other-blockchain-user:
     restart: unless-stopped
     build:
-      dockerfile: ${PWD}/modules/other_chain_user/Dockerfile
-      context: ${PWD}/modules/other_chain_user
+      dockerfile: ${PWD}/../../modules/other_chain_user/Dockerfile
+      context: ${PWD}/../../modules/other_chain_user
     depends_on:
       - ganache
     networks:
@@ -199,6 +200,9 @@ services:
   pathfinder-proxy:
     image: circlesubi/pathfinder-proxy:dev
     restart: unless-stopped
+    depends_on:
+      - pathfinder2-updater
+      - pathfinder2
     ports:
       - 8081:80
     networks:
@@ -206,13 +210,15 @@ services:
     environment:
       PORT: ${PATHFINDER_PROXY_PORT}
       CORS_ORIGINS: ${PATHFINDER_PROXY_CORS_ORIGINS}
-      UPSTREAM_SERVICE_ENDPOINTS: ${PATHFINDER_UPSTREAM_SERVICE_ENDPOINTS}
-      UPSTREAM_HEALTH_ENDPOINTS: ${UPSTREAM_HEALTH_ENDPOINTS}
+      UPSTREAM_SERVICE_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_SERVICE_ENDPOINTS}
+      UPSTREAM_HEALTH_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_HEALTH_ENDPOINTS}
 
   frontend:
+    depends_on:
+      - api-server
     build:
-      dockerfile: ${PWD}/modules/frontend/Dockerfile
-      context: ${PWD}/modules/frontend
+      dockerfile: ${PWD}/../../modules/frontend/Dockerfile
+      context: ${PWD}/../../modules/frontend
       args:
         API_ENDPOINT: ${FRONTEND_API_ENDPOINT}
         CIRCLES_SUBGRAPH_ENDPOINT: ${FRONTEND_CIRCLES_SUBGRAPH_ENDPOINT}
@@ -241,7 +247,7 @@ services:
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
     ports:
-      - "9000:9000"
+      - 9000:9000
 
 networks:
   internal:
