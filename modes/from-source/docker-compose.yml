@@ -222,6 +222,7 @@ services:
   frontend:
     depends_on:
       - api-server
+    restart: unless-stopped
     build:
       dockerfile: ${PWD}/../../modules/frontend-src/Dockerfile
       context: ${PWD}/../../modules/frontend-src
