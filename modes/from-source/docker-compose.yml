@@ -240,7 +240,6 @@ services:
       - 8080:8080
     volumes:
       - ${PWD}/../../../o-platform:/o-platform
-        
 
   minio:
     image: minio/minio:latest

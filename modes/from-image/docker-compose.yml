@@ -249,5 +249,19 @@ services:
     ports:
       - 9000:9000
 
+  caddy:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    networks:
+      - internal
+    volumes:
+      - ${PWD}/../../modules/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ${PWD}/.state/caddy/data:/data
+      - ${PWD}/.state/caddy/config:/config
+
 networks:
   internal:
