@@ -1,5 +1,4 @@
 # Circles.land development environment
-## Overview
 This repository bundles all components of the circles.land server and client software
 in a Docker Compose environment that you can use for development on your local machine.
 
@@ -53,10 +52,14 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
 ## Usage
 ### Run the stack
 1. Choose which mode you want to use and `cd` into the corresponding directory (modes/from-image or modes/from-source)
-2. Run `docker compose up`
-3. Run 'watch docker compose ps -a' on a different terminal and wait until all services become available (aren't restarting)
-___Note:___ All '*-init' containers will exit and remain in that state once they finished their work. This is normal.
+2. Run `docker compose up -d`
+3. Run `watch docker compose ps` and wait until all services become available (aren't restarting)  
+   ___Note:___ All '*-init' containers will exit and remain in that state once they finished their work. This is normal.
 4. Visit http://localhost:8080 to access the UI
+
+### Stop the stack
+1. `cd` to the mode directory (from-image or from-source) from which you started the stack
+2. Run `docker compose stop`
 
 ### Runtime state
 All volumes are mounted in the `.state` directory of each mode. This means that the state of the setup
@@ -74,5 +77,24 @@ docker compose down \
       frontend
       
 # Restart the stack
-docker compose up
+docker compose up -d
 ```
+
+### Troubleshooting
+#### UI doesn't load
+1. Check the 'frontend' logs to see if it is running properly
+2. Check the 'api-server' logs to see if it is running properly
+3. Check if the '*-init' containers all completed successfully
+
+#### View logs
+1. Run `docker compose ps -a` to list all the containers in this stack and look for the 
+   `CONTAINER ID` of the service you want to see the logs from.
+2. Run `docker logs [CONTAINER ID] -f -n 1000`
+
+#### Restart a single container
+It may happen that a single container shows some misbehavior during development. 
+To avoid having to restart the entire stack when a component malfunctions, you can restart 
+a single container:
+1. Run `docker compose ps -a` to list all the containers in this stack and look for the
+   `CONTAINER ID` of the service you want to restart.
+2. Run `docker restart [CONTAINER ID]`
