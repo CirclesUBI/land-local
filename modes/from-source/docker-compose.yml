@@ -74,7 +74,9 @@ services:
       APP_URL: ${FRONTEND_APP_URL}
 
   api-server:
-    image: circlesubi/api-server:dev
+    build:
+      dockerfile: ${PWD}/../../modules/api-server-src/Dockerfile
+      context: ${PWD}/../../modules/api-server-src
     restart: unless-stopped
     depends_on:
       - api-db-init
@@ -113,6 +115,8 @@ services:
       S3_AVATAR_FILES_BUCKET_KEY_ID: ${MINIO_ACCESS_KEY}
       S3_AVATAR_FILES_BUCKET_KEY_SECRET: ${MINIO_SECRET_KEY}
       S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX: ${API_SERVER_S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX}
+    volumes:
+      - ${PWD}/../../../api-server:/api-server
 
   blockchain-indexer:
     image: circlesubi/blockchain-indexer:dev

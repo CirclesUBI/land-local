@@ -39,8 +39,8 @@ dockerhub as configured in the /modes/from-image/docker-compose.yml file.
 ### from-source
 Use this mode if you want to make changes to the circles.land codebase.  
 
-In this mode, the frontend is compiled from the local source code on your machine.
-Then the webpack server is used to serve the application and watch for changes.
+In this mode, the frontend and the api-server are compiled from the local source code on your machine.
+Then the webpack server and nodemon are used to serve the application and watch for changes.
 All other services use the images from dockerhub. The services for this mode are defined 
 in the /modes/from-source/docker-compose.yml file.
 
@@ -48,6 +48,7 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
 * ../
   * land-local/
   * o-platform/
+  * api-server/
 
 ## Usage
 ### Run the stack
