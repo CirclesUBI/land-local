@@ -6,4 +6,4 @@ RUN npm install -g typescript
 
 WORKDIR /api-server
 
-CMD ./build.sh / && (tsc --watch & (cd dist && nodemon main.js))
+CMD ./build.sh && (tsc --watch & (sleep 30 && cd dist && nodemon main.js))
