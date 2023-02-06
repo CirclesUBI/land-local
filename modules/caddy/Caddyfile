@@ -1,0 +1,8 @@
+api-server.localhost {
+    reverse_proxy * http://api-server:8989
+    tls internal
+}
+o-platform.localhost {
+    reverse_proxy * http://frontend:8080
+    tls internal
+}
