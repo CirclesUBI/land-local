@@ -3,6 +3,6 @@ api-server.localhost {
     tls internal
 }
 o-platform.localhost {
-    reverse_proxy * http://frontend:80
+    reverse_proxy * http://frontend:8080
     tls internal
 }

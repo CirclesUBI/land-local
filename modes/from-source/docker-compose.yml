@@ -270,7 +270,7 @@ services:
     networks:
       - internal
     volumes:
-      - ${PWD}/../../modules/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ${PWD}/../../modules/caddy-src:/etc/caddy/
       - ${PWD}/.state/caddy/data:/data
       - ${PWD}/.state/caddy/config:/config
 
