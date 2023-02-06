@@ -8,12 +8,13 @@ services:
     networks:
       - internal
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: [ "CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
     environment:
       POSTGRES_PASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
+      PGPASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
       POSTGRES_DB: ${INDEXER_DB_POSTGRES_DB}
     volumes:
       - ${PWD}/.state/indexer-db/pg_data:/var/lib/postgresql/data
@@ -41,12 +42,13 @@ services:
     networks:
       - internal
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready" ]
+      test: [ "CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
     environment:
       POSTGRES_PASSWORD: ${API_DB_POSTGRES_PASSWORD}
+      PGPASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
       POSTGRES_DB: ${API_DB_POSTGRES_DB}
     volumes:
       - ${PWD}/.state/api-db/pg_data:/var/lib/postgresql/data
