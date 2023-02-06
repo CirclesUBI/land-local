@@ -55,7 +55,7 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
 2. Run `docker compose up -d`
 3. Run `watch docker compose ps` and wait until all services become available (aren't restarting)  
    ___Note:___ All '*-init' containers will exit and remain in that state once they finished their work. This is normal.
-4. Visit http://localhost:8080 to access the UI
+4. Visit https://o-platform.localhost to access the UI. The api is available at https://api-server.localhost.
 
 ### Stop the stack
 1. `cd` to the mode directory (from-image or from-source) from which you started the stack
