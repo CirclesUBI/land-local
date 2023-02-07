@@ -66,10 +66,9 @@ To retry, either restart the container or change a file within the api-server's 
 
 #### Invitation code
 In the process of creating an account you will be asked for an invitation. 
-Present the following QR code to your webcam to proceed with the account setup.
-![invitation code](docs/local_invitation.png)
+Present the following QR code to your webcam to proceed with the account setup.  
 
-#### Access the databases
+![invitation code](docs/local_invitation.png)
 
 
 ### Stop the stack
