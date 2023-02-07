@@ -237,18 +237,33 @@ services:
       - internal
 
   minio:
-    image: minio/minio:latest
-    networks:
-      - internal
-    command:
-      - server
-      - /data
+    image: minio/minio
+    ports:
+      - 9000:9000
+      - 9090:9090
+    volumes:
+      - ${PWD}/.state/minio/data:/export
+      - ${PWD}/.state/minio/.minio:/root/.minio
     environment:
       MINIO_ADDRESS: 0.0.0.0:9000
       MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
       MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
-    ports:
-      - 9000:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /export  --console-address 0.0.0.0:9090
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc config host add myminio http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
+      /usr/bin/mc rm -r --force myminio/avatar-images;
+      /usr/bin/mc mb myminio/avatar-images;
+      /usr/bin/mc policy download myminio/avatar-images;
+      exit 0;
+      "
 
   caddy:
     image: caddy:latest
