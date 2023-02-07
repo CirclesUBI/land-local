@@ -59,6 +59,12 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
 4. First visit https://api-server.localhost and accept the self-signed certificate
 5. Then visit https://o-platform.localhost and accept the self-signed certificate to access the UI
 
+
+#### Invitation code
+In the process of creating an account you will be asked for an invitation. 
+Present the following QR code to your webcam to proceed with the account setup.
+![invitation code](docs/local_invitation.png)
+
 ### Stop the stack
 1. `cd` to the mode directory (from-image or from-source) from which you started the stack
 2. Run `docker compose stop`
