@@ -69,4 +69,11 @@ AddProperty("ports", "8080:8080")
 Container(frontend, "frontend")
 Rel_D(frontend, api_server, "depends-on", "")
 
+WithoutPropertyHeader()
+AddProperty("ports", "80:80")
+AddProperty("ports", "443:443")
+Container(caddy, "caddy")
+Rel_D(caddy, frontend, "depends-on", "")
+Rel_D(caddy, api_server, "depends-on", "")
+
 @enduml

@@ -263,6 +263,9 @@ services:
   caddy:
     image: caddy:latest
     restart: unless-stopped
+    depends_on:
+      - frontend
+      - api-server
     ports:
       - "80:80"
       - "443:443"
