@@ -69,6 +69,9 @@ In the process of creating an account you will be asked for an invitation.
 Present the following QR code to your webcam to proceed with the account setup.
 ![invitation code](docs/local_invitation.png)
 
+#### Access the databases
+
+
 ### Stop the stack
 1. `cd` to the mode directory (from-image or from-source) from which you started the stack
 2. Run `docker compose stop`
