@@ -64,6 +64,10 @@ AddProperty("ports", "9000:9000")
 Container(minio, "minio")
 Rel_D(api_server, minio, "depends-on", "")
 
+Container(minio_init, "minio-init")
+Rel_D(minio_init, minio, "depends-on", "")
+Rel_D(api_server, minio_init, "depends-on", "")
+
 WithoutPropertyHeader()
 AddProperty("ports", "8080:8080")
 Container(frontend, "frontend")

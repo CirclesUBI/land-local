@@ -110,3 +110,7 @@ a single container:
 1. Run `docker compose ps -a` to list all the containers in this stack and look for the
    `CONTAINER ID` of the service you want to restart.
 2. Run `docker restart [CONTAINER ID]`
+
+#### Containers don't stop
+You can kill non-responding containers with the following command:  
+`docker compose kill [SERVICE NAME]`

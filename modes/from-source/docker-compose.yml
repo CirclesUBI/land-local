@@ -85,6 +85,7 @@ services:
       - ganache-init
       - blockchain-indexer
       - pathfinder-proxy
+      - minio-init
     networks:
       - internal
     environment:
@@ -265,7 +266,6 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc config host add myminio http://minio:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY};
-      /usr/bin/mc rm -r --force myminio/avatar-images;
       /usr/bin/mc mb myminio/avatar-images;
       /usr/bin/mc policy download myminio/avatar-images;
       exit 0;
