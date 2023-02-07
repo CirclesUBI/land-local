@@ -96,5 +96,5 @@ module.exports = async function (deployer, network, accounts) {
     console.log("invitationFundsAddress:", invitationFundsAddress);
 
     console.log("Sending 1000 Eth invitation funds to:", invitationFundsAddress);
-    await sendFunds(new Web3.utils.BN("1000000000000000000000"), invitationFundsAddress);
+    await sendFunds(new Web3.utils.BN("10000000000000000000"), invitationFundsAddress);
 }

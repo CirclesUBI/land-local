@@ -85,8 +85,6 @@ services:
       - pathfinder-proxy
     networks:
       - internal
-    ports:
-      - 8989:8989
     environment:
       APP_ID: ${API_SERVER_APP_ID}
       APP_URL: ${FRONTEND_APP_URL}
@@ -237,8 +235,6 @@ services:
         PLACES_API_KEY: ${FRONTEND_PLACES_API_KEY}
     networks:
       - internal
-    ports:
-      - 8080:80
 
   minio:
     image: minio/minio:latest
