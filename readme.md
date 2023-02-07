@@ -59,6 +59,10 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
 4. First visit https://api-server.localhost and accept the self-signed certificate
 5. Then visit https://o-platform.localhost and accept the self-signed certificate to access the UI
 
+#### Known issues
+Especially on the first start in 'from-source'-mode it happens that the api-server hangs.
+The corresponding log output is `[nodemon] app crashed - waiting for file changes before starting.`.  
+To retry either restart the container or change a file within the api-server's src-directory.
 
 #### Invitation code
 In the process of creating an account you will be asked for an invitation. 
