@@ -1,8 +1,21 @@
-api-server.localhost {
-    reverse_proxy * http://api-server:8989
-    tls internal
-}
-o-platform.localhost {
-    reverse_proxy * http://frontend:8080
-    tls internal
+*.localhost {
+	tls internal
+
+    @api-server host api-server.localhost
+    handle @api-server {
+        reverse_proxy /graphql ws://api-server:8989
+        reverse_proxy * http://api-server:8989
+    }
+
+    @o-platform host o-platform.localhost
+    handle @o-platform {
+        reverse_proxy /ws ws://frontend:8080
+        reverse_proxy * http://frontend:8080
+    }
+
+    # Fallback for otherwise unhandled domains
+    handle {
+        abort
+    }
+
 }
