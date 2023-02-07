@@ -253,9 +253,6 @@ services:
       - ${PWD}/.state/minio/data:/export
       - ${PWD}/.state/minio/.minio:/root/.minio
     environment:
-      MINIO_ADDRESS: 0.0.0.0:9000
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     command: server /export  --console-address 0.0.0.0:9090
