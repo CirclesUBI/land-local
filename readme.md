@@ -9,6 +9,7 @@ It starts the following services/containers:
 
 | Repo                                                                     | Service               | Description                                                                               |
 |--------------------------------------------------------------------------|-----------------------|-------------------------------------------------------------------------------------------|
+| [caddy](https://hub.docker.com/_/caddy)                                  | frontend-proxy        | A tls-terminating reverse proxy for the 'frontend' and the 'api-server'                   |
 | [o-platform](https://github.com/CirclesUBI/o-platform)                   | frontend              | The svelte based frontend application of circles.land                                     |
 | [api-server](https://github.com/CirclesUBI/api-server)                   | api-server            | Provides access to all services trough a GraphQL api                                      |
 | [blockchain-indexer](https://github.com/CirclesUBI/blockchain-indexer)   | blockchain-indexer    | Indexes circles related on-chain events and writes them to a postgres db                  |
