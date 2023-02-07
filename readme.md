@@ -56,7 +56,8 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
 2. Run `docker compose up -d`
 3. Run `watch docker compose ps` and wait until all services become available (aren't restarting)  
    ___Note:___ All '*-init' containers will exit and remain in that state once they finished their work. This is normal.
-4. Visit https://o-platform.localhost to access the UI. The api is available at https://api-server.localhost.
+4. First visit https://api-server.localhost and accept the self-signed certificate
+5. Then visit https://o-platform.localhost and accept the self-signed certificate to access the UI
 
 ### Stop the stack
 1. `cd` to the mode directory (from-image or from-source) from which you started the stack
