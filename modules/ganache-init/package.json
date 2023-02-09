@@ -12,6 +12,7 @@
   "dependencies": {
     "@truffle/contract": "^4.6.13",
     "truffle": "^5.7.4",
-    "web3": "^1.8.1"
+    "web3": "^1.8.1",
+    "@safe-global/safe-core-sdk": "^3.3.1"
   }
 }
