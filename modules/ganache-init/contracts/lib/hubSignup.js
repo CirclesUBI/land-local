@@ -1,29 +1,25 @@
-const safeArtifacts = require('/app/contracts/build/contracts/GnosisSafe.json');
 const hub = require('/app/contracts/build/contracts/Hub.json');
+const {web3Instance} = require("./web3instance");
 
-const hubSignup = async function() {
-
-
+const hubSignup = async function(safe, hubContractAddress) {
     const hubAbi = hub.abi;
-    const hubInstance = new web3Instance.web3Instance.eth.Contract(hubAbi, safeProxyFactoryAddress);
+    const hubInstance = new web3Instance.eth.Contract(hubAbi, hubContractAddress);
 
-    const safeAbi = safeArtifacts.abi;
-    const safeContractInstance = new web3Instance.web3Instance.eth.Contract(safeAbi, safeMasterCopyAddress);
-
-    const createProxyData = hubInstance.methods
-        .signup(safeMasterCopyAddress, proxySetupData)
+    const signupCallData = hubInstance.methods
+        .signup()
         .encodeABI();
 
-    return await safeProxy.execTransaction(privateKey, {
-        to: this.address,
-        data: txData,
-        value: new BN("0"),
-        refundReceiver: ZERO_ADDRESS,
-        gasToken: ZERO_ADDRESS,
-        operation: SafeOps.CALL,
-    }, true);
-}
+    const safeTransactionData = {
+        to: hubContractAddress,
+        value: "0",
+        data: signupCallData
+    }
 
+    const safeTransaction = await safe.createTransaction({ safeTransactionData });
+    const executeTxResponse = await safe.executeTransaction(safeTransaction);
+
+    console.log(`HubSignup for: ${safe.getAddress()}`);
+}
 
 module.exports = {
     hubSignup

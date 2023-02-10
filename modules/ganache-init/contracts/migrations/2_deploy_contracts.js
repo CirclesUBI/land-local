@@ -1,5 +1,6 @@
 const Hub = artifacts.require('./Hub.sol');
-const { convertToBaseUnit } = require('../test/helpers/math');
+const { convertToBaseUnit } = require('../lib/math');
+const {addressCollection} = require("../lib/addressCollection");
 
 module.exports = async function (deployer) {
   await deployer.deploy(
@@ -12,6 +13,7 @@ module.exports = async function (deployer) {
     '92592592592592',
     '7776000',
   ).then(result => {
+    addressCollection.hubContract = result.address;
     console.log("Hub contract address is:", result.address);
   })
 };

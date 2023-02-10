@@ -1,17 +1,35 @@
-const {createSafe} = require("../lib/createSafe");
 const {sendFunds} = require("../lib/sendFunds");
 const Web3 = require("web3");
+const {getSafeFactory} = require("../lib/getSafeFactory");
+const {defaultOwnerAccount} = require("../lib/defaultOwnerAccount");
 
 module.exports = async function (deployer, network, accounts) {
-    const profileSafeAddress = await createSafe();
-    console.log("safe1Address:", profileSafeAddress);
+    const safeFactory = await getSafeFactory();
 
-    const orgaSafeAddress = await createSafe();
-    console.log("safe2Address:", orgaSafeAddress);
+    const profileSafe = await safeFactory.deploySafe({
+        safeAccountConfig: {
+            owners: [defaultOwnerAccount.address],
+            threshold: 1
+        }
+    });
+    console.log("safe1Address:", profileSafe.getAddress());
 
-    const invitationFundsAddress = await createSafe();
-    console.log("invitationFundsAddress:", invitationFundsAddress);
+    const orgaSafe = await safeFactory.deploySafe({
+        safeAccountConfig: {
+            owners: [defaultOwnerAccount.address],
+            threshold: 1
+        }
+    });
+    console.log("safe2Address:", orgaSafe.getAddress());
 
-    console.log("Sending 100 Eth invitation funds to:", invitationFundsAddress);
-    await sendFunds(new Web3.utils.BN("10000000000000000000"), invitationFundsAddress);
+    const invitationFundsSafe = await safeFactory.deploySafe({
+        safeAccountConfig: {
+            owners: [defaultOwnerAccount.address],
+            threshold: 1
+        }
+    });
+    console.log("invitationFundsAddress:", invitationFundsSafe.getAddress());
+
+    console.log("Sending 100 Eth invitation funds to:", invitationFundsSafe.getAddress());
+    await sendFunds(new Web3.utils.BN("10000000000000000000"), invitationFundsSafe.getAddress());
 }

@@ -1,15 +1,19 @@
-FROM node:latest
+FROM node:latest as dependencies
 
 COPY ./init.sh /app/init.sh
 RUN chmod +x /app/init.sh
 
-COPY ./contracts /app/contracts
 COPY ./package.json /app/package.json
 COPY ./package-lock.json /app/package-lock.json
 
 WORKDIR /app
 
 RUN npm install
+
+FROM node:alpine as runtime
+COPY --from=dependencies /app /app
+
+COPY ./contracts /app/contracts
 
 WORKDIR /app/contracts
 
