@@ -6,7 +6,12 @@ const addressCollection = {
     multiSendContract: "",
     safeProxyContract: "",
     compatibilityFallbackHandlerContract: "",
-    multiSendCallOnlyContract: ""
+    multiSendCallOnlyContract: "",
+    migrationsContract: "",
+    rootSafeContract: "",
+    operatorOrgaSafeContract: "",
+    invitationFundsSafeContract: "",
+    otherSafes: {}
 };
 
 module.exports = {

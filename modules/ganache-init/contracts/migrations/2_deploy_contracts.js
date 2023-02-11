@@ -3,7 +3,7 @@ const { convertToBaseUnit } = require('../lib/math');
 const {addressCollection} = require("../lib/addressCollection");
 
 module.exports = async function (deployer) {
-  await deployer.deploy(
+   await deployer.deploy(
     Hub,
     107,
     31556952,

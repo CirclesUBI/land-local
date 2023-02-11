@@ -1,9 +1,7 @@
-const {defaultOwnerAccount} = require("../lib/defaultOwnerAccount");
+const {defaultOwnerAccount, defaultKey} = require("../lib/defaultOwnerAccount");
 const {hubSignup} = require("../lib/hubSignup");
 const {addressCollection} = require("../lib/addressCollection");
 const {getSafeFactory} = require("../lib/getSafeFactory");
-
-const otherSafes = [];
 
 module.exports = async function (deployer, network, accounts) {
     const safeFactory = await getSafeFactory();
@@ -16,11 +14,27 @@ module.exports = async function (deployer, network, accounts) {
             }
         });
 
-        await hubSignup(newSafe, addressCollection.hubContract);
+        addressCollection.otherSafes[newSafe.getAddress()] = newSafe;
 
-        otherSafes.push(newSafe.getAddress());
+        console.log(`Signing up ${newSafe} at hub ${addressCollection.hubContract} ..`)
+        await hubSignup(newSafe, addressCollection.hubContract);
     }
 
-    console.log("Created other safes:")
-    console.log(otherSafes);
+    console.log(`addressCollection:`);
+    console.log(JSON.stringify(addressCollection, null, 2));
+
+    console.log(`
+CONTRACT_ADDRESS_CIRCLES_HUB=${addressCollection.hubContract.toLowerCase()}
+CONTRACT_ADDRESS_SAFE_PROXY_FACTORY=${addressCollection.proxyFactoryContract.toLowerCase()}
+CONTRACT_ADDRESS_MASTER_SAFE_COPY=${addressCollection.masterSafeContract.toLowerCase()}
+API_DATA_INITIAL_USER_SAFE_ADDRESS=${addressCollection.rootSafeContract.toLowerCase()}
+API_DATA_INITIAL_USER_SAFE_OWNER_ADDRESS=${addressCollection.defaultOwnerAccount.toLowerCase()}
+API_DATA_INITIAL_ORG_SAFE_ADDRESS=${addressCollection.operatorOrgaSafeContract.toLowerCase()}
+API_DATA_INITIAL_ORG_SAFE_OWNER_ADDRESS=${addressCollection.defaultOwnerAccount.toLowerCase()}
+API_SERVER_INVITATION_FUNDS_SAFE_ADDRESS=${addressCollection.invitationFundsSafeContract.toLowerCase()}
+API_SERVER_INVITATION_FUNDS_SAFE_KEY=${defaultKey}
+API_SERVER_OPERATOR_ORGANISATION_ADDRESS=${addressCollection.operatorOrgaSafeContract.toLowerCase()}
+OTHER_BLOCKCHAIN_USER_TO_ADDRESS=${addressCollection.defaultOwnerAccount.toLowerCase()}
+OTHER_BLOCKCHAIN_PRIVATE_KEY=${defaultKey}
+`);
 }

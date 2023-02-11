@@ -2,6 +2,8 @@ const {sendFunds} = require("../lib/sendFunds");
 const Web3 = require("web3");
 const {getSafeFactory} = require("../lib/getSafeFactory");
 const {defaultOwnerAccount} = require("../lib/defaultOwnerAccount");
+const {addressCollection} = require("../lib/addressCollection");
+const {orgaHubSignup} = require("../lib/orgaHubSignup");
 
 module.exports = async function (deployer, network, accounts) {
     const safeFactory = await getSafeFactory();
@@ -12,7 +14,7 @@ module.exports = async function (deployer, network, accounts) {
             threshold: 1
         }
     });
-    console.log("safe1Address:", profileSafe.getAddress());
+    addressCollection.rootSafeContract = profileSafe.getAddress();
 
     const orgaSafe = await safeFactory.deploySafe({
         safeAccountConfig: {
@@ -20,7 +22,9 @@ module.exports = async function (deployer, network, accounts) {
             threshold: 1
         }
     });
-    console.log("safe2Address:", orgaSafe.getAddress());
+    addressCollection.operatorOrgaSafeContract = orgaSafe.getAddress();
+
+    await orgaHubSignup(orgaSafe, addressCollection.hubContract);
 
     const invitationFundsSafe = await safeFactory.deploySafe({
         safeAccountConfig: {
@@ -28,7 +32,7 @@ module.exports = async function (deployer, network, accounts) {
             threshold: 1
         }
     });
-    console.log("invitationFundsAddress:", invitationFundsSafe.getAddress());
+    addressCollection.invitationFundsSafeContract = invitationFundsSafe.getAddress();
 
     console.log("Sending 100 Eth invitation funds to:", invitationFundsSafe.getAddress());
     await sendFunds(new Web3.utils.BN("10000000000000000000"), invitationFundsSafe.getAddress());

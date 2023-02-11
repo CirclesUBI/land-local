@@ -1,11 +1,8 @@
 #!/bin/bash
-cp -r -f app/ganache-seed-db/* /var/ganache-db/*
-rm -r -f app/ganache-seed-db/
-
 node /app/dist/node/cli.js \
   --logging.debug=true \
   -v \
-  --db="/var/ganache-db" \
+  --database.dbPath="/var/ganache-db" \
   --blockTime=1 \
   --gasLimit 0xfffffffffffff \
   --account="0x5bc6328efff9fc724aad89edf1356a6ba7bee56368b4b9b47b1f29a5cd6d73c7,1000000000000000000000000" \
