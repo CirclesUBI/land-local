@@ -17,7 +17,10 @@ const trust = async function(safe, hubContractAddress, userAddress, limit) {
         data: trustCallData
     }
 
-    const safeTransaction = await safe.createTransaction({ safeTransactionData });
+    const safeTransaction = await safe.createTransaction({
+        safeTransactionData: safeTransactionData,
+        safeTxGas: 10000000
+    });
     const executeTxResponse = await safe.executeTransaction(safeTransaction);
 
     console.log(`Trust: ${safe.getAddress()} trusts ${userAddress} with limit ${limit}. Tx hash: ${executeTxResponse.hash}`);
