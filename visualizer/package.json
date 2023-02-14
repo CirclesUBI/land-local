@@ -1,0 +1,15 @@
+{
+  "name": "visualizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "visualize-dependencies.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "pg": "^8.9.0"
+  },
+  "author": "",
+  "license": "ISC"
+}

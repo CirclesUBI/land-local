@@ -23,8 +23,14 @@ services:
     build:
       dockerfile: ${PWD}/../../modules/indexer-db-init/Dockerfile
       context: ${PWD}/../../modules/indexer-db-init
+    healthcheck:
+      test: [ "CMD", "test", "-f", "/app/.ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 12
     depends_on:
-      - indexer-db
+      indexer-db:
+        condition: service_healthy
     networks:
       - internal
     environment:
@@ -57,8 +63,16 @@ services:
     build:
       dockerfile: ${PWD}/../../modules/api-db-init/Dockerfile
       context: ${PWD}/../../modules/api-db-init
+    healthcheck:
+      test: [ "CMD", "test", "-f", "/app/.ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 12
     depends_on:
-      - api-db
+      api-db:
+        condition: service_healthy
+      ganache-init:
+        condition: service_healthy
     networks:
       - internal
     environment:
@@ -74,6 +88,8 @@ services:
       INITIAL_USER_NAME: ${API_DATA_INITIAL_USER_NAME}
       INITIAL_USER_EMAIL: ${API_DATA_INITIAL_USER_EMAIL}
       APP_URL: ${FRONTEND_APP_URL}
+    volumes:
+      - ${PWD}/.state/ganache-init/status/:/app/status/
 
   api-server:
     build:
@@ -81,11 +97,16 @@ services:
       context: ${PWD}/../../modules/api-server-src
     restart: unless-stopped
     depends_on:
-      - api-db-init
-      - ganache-init
-      - blockchain-indexer
-      - pathfinder-proxy
-      - minio-init
+      api-db-init:
+        condition: service_healthy
+      ganache-init:
+        condition: service_healthy
+      blockchain-indexer:
+        condition: service_started
+      pathfinder-proxy:
+        condition: service_started
+      minio-init:
+        condition: service_started
     networks:
       - internal
     environment:
@@ -120,14 +141,19 @@ services:
       S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX: ${API_SERVER_S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX}
     volumes:
       - ${PWD}/../../../api-server:/api-server
+      - ${PWD}/.state/ganache-init/status/:/app/status/
 
   blockchain-indexer:
-    image: circlesubi/blockchain-indexer:dev
+    build:
+      dockerfile: ${PWD}/../../modules/blockchain-indexer/Dockerfile
+      context: ${PWD}/../../modules/blockchain-indexer
     expose:
       - 8675
     depends_on:
-      - ganache-init
-      - indexer-db-init
+      ganache-init:
+        condition: service_healthy
+      indexer-db-init:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - internal
@@ -138,6 +164,9 @@ services:
       INDEXER_RPC_GATEWAY_URL: ${INTERNAL_CHAIN_RPC_URL}
       HUB_ADDRESS: ${CONTRACT_ADDRESS_CIRCLES_HUB}
       INDEXER_CONNECTION_STRING: ${BLOCKCHAIN_INDEXER_CONNECTION_STRING}
+      START_FROM_BLOCK: ${BLOCKCHAIN_INDEXER_START_FROM_BLOCK}
+    volumes:
+      - ${PWD}/.state/ganache-init/status/:/app/status/
 
   ganache:
     build:
@@ -155,11 +184,19 @@ services:
   ganache-init:
     depends_on:
       - ganache
+    healthcheck:
+      test:  [ "CMD", "test", "-f", "/app/status/addresses.json" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
     build:
       dockerfile: ${PWD}/../../modules/ganache-init/Dockerfile
       context: ${PWD}/../../modules/ganache-init
     networks:
       - internal
+    volumes:
+      - ${PWD}/.state/ganache-init/status/:/app/status/
 
   other-blockchain-user:
     restart: unless-stopped
@@ -167,7 +204,8 @@ services:
       dockerfile: ${PWD}/../../modules/other_chain_user/Dockerfile
       context: ${PWD}/../../modules/other_chain_user
     depends_on:
-      - ganache
+      ganache-init:
+        condition: service_healthy
     networks:
       - internal
     environment:
@@ -251,7 +289,7 @@ services:
       - 9000:9000
       - 9090:9090
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://localhost:8675/"]
+      test: [ "CMD-SHELL", "curl --fail http://localhost:9090"]
       interval: 10s
       timeout: 5s
       retries: 5

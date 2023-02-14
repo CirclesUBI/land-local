@@ -1,12 +1,12 @@
-const hub = require('/app/contracts/build/contracts/Hub.json');
+const hub = require('../build/contracts/Hub.json');
 const {web3Instance} = require("./web3instance");
 
-const hubSignup = async function(safe, hubContractAddress) {
+const orgaHubSignup = async function(safe, hubContractAddress) {
     const hubAbi = hub.abi;
     const hubInstance = new web3Instance.eth.Contract(hubAbi, hubContractAddress);
 
     const signupCallData = hubInstance.methods
-        .signup()
+        .organizationSignup()
         .encodeABI();
 
     const safeTransactionData = {
@@ -18,9 +18,9 @@ const hubSignup = async function(safe, hubContractAddress) {
     const safeTransaction = await safe.createTransaction({ safeTransactionData });
     const executeTxResponse = await safe.executeTransaction(safeTransaction);
 
-    console.log(`HubSignup for: ${safe.getAddress()}`);
+    console.log(`OrganizationSignup for: ${safe.getAddress()}`);
 }
 
 module.exports = {
-    hubSignup
+    orgaHubSignup: orgaHubSignup
 }

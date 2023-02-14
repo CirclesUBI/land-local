@@ -13,7 +13,7 @@ module.exports = async function (deployer) {
     '92592592592592',
     '7776000',
   ).then(result => {
-    addressCollection.hubContract = result.address;
-    console.log("Hub contract address is:", result.address);
+    addressCollection.hubContract = result.address.toLowerCase();
+    console.log("Hub contract address is:", result.address.toLowerCase());
   })
 };

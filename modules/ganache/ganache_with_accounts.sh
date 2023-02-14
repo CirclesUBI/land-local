@@ -4,6 +4,7 @@ node /app/dist/node/cli.js \
   -v \
   --database.dbPath="/var/ganache-db" \
   --blockTime=1 \
+  --deterministic \
   --gasLimit 0xfffffffffffff \
   --account="0x5bc6328efff9fc724aad89edf1356a6ba7bee56368b4b9b47b1f29a5cd6d73c7,1000000000000000000000000" \
   --account="0x89e62e74143e15eaba362a67f8d71e5371d1268e1769b2613b8483024d17e110,1000000000000000000000000" \

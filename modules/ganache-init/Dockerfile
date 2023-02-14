@@ -13,8 +13,9 @@ RUN npm install
 FROM node:alpine as runtime
 COPY --from=dependencies /app /app
 
-COPY ./contracts /app/contracts
+COPY truffle /app/truffle
+COPY seed-data /app/seed-data
 
-WORKDIR /app/contracts
+WORKDIR /app
 
 ENTRYPOINT ["/bin/sh", "/app/init.sh"]

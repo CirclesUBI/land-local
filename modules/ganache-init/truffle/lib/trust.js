@@ -1,4 +1,4 @@
-const hub = require('/app/contracts/build/contracts/Hub.json');
+const hub = require('../build/contracts/Hub.json');
 const {web3Instance} = require("./web3instance");
 
 const trust = async function(safe, hubContractAddress, userAddress, limit) {
@@ -20,7 +20,8 @@ const trust = async function(safe, hubContractAddress, userAddress, limit) {
     const safeTransaction = await safe.createTransaction({ safeTransactionData });
     const executeTxResponse = await safe.executeTransaction(safeTransaction);
 
-    console.log(`Trust: ${safe.getAddress()} trusts ${userAddress} with limit ${limit}`);
+    console.log(`Trust: ${safe.getAddress()} trusts ${userAddress} with limit ${limit}. Tx hash: ${executeTxResponse.hash}`);
+    return executeTxResponse;
 }
 
 module.exports = {

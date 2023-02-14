@@ -1,12 +1,11 @@
-const {sendFunds} = require("../lib/sendFunds");
+const {sendFunds} = require("../truffle/lib/sendFunds");
 const Web3 = require("web3");
-const {getSafeFactory} = require("../lib/getSafeFactory");
-const {defaultOwnerAccount} = require("../lib/defaultOwnerAccount");
-const {addressCollection} = require("../lib/addressCollection");
-const {orgaHubSignup} = require("../lib/orgaHubSignup");
+const {getSafeFactory} = require("../truffle/lib/getSafeFactory");
+const {orgaHubSignup} = require("../truffle/lib/orgaHubSignup");
+const {defaultOwnerAccount} = require("../truffle/lib/defaultOwnerAccount");
 
-module.exports = async function (deployer, network, accounts) {
-    const safeFactory = await getSafeFactory();
+module.exports = async function (addresses) {
+    const safeFactory = await getSafeFactory(addresses);
 
     const profileSafe = await safeFactory.deploySafe({
         safeAccountConfig: {
@@ -14,7 +13,7 @@ module.exports = async function (deployer, network, accounts) {
             threshold: 1
         }
     });
-    addressCollection.rootSafeContract = profileSafe.getAddress();
+    addresses.rootSafeContract = profileSafe.getAddress();
 
     const orgaSafe = await safeFactory.deploySafe({
         safeAccountConfig: {
@@ -22,9 +21,9 @@ module.exports = async function (deployer, network, accounts) {
             threshold: 1
         }
     });
-    addressCollection.operatorOrgaSafeContract = orgaSafe.getAddress();
+    addresses.operatorOrgaSafeContract = orgaSafe.getAddress();
 
-    await orgaHubSignup(orgaSafe, addressCollection.hubContract);
+    await orgaHubSignup(orgaSafe, addresses.hubContract);
 
     const invitationFundsSafe = await safeFactory.deploySafe({
         safeAccountConfig: {
@@ -32,7 +31,7 @@ module.exports = async function (deployer, network, accounts) {
             threshold: 1
         }
     });
-    addressCollection.invitationFundsSafeContract = invitationFundsSafe.getAddress();
+    addresses.invitationFundsSafeContract = invitationFundsSafe.getAddress();
 
     console.log("Sending 100 Eth invitation funds to:", invitationFundsSafe.getAddress());
     await sendFunds(new Web3.utils.BN("10000000000000000000"), invitationFundsSafe.getAddress());
