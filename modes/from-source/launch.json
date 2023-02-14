@@ -41,7 +41,7 @@
         "S3_AVATAR_FILES_BUCKET_NAME": "avatar-images",
         "S3_AVATAR_FILES_BUCKET_KEY_ID": "0womfwnewqmqsclowyds",
         "S3_AVATAR_FILES_BUCKET_KEY_SECRET": "ffw3jiwienvqncyewosaqwncxaxcf23ncsdnj",
-        "S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX": "=http://localhost:9000/avatar-images/"
+        "S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX": "http://localhost:9000/avatar-images/"
       }
     }
   ]
