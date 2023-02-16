@@ -1,4 +1,5 @@
 const {hubSignup} = require("../truffle/lib/hubSignup");
+const {orgaHubSignup} = require("../truffle/lib/orgaHubSignup");
 const {getSafeFactory} = require("../truffle/lib/getSafeFactory");
 const {defaultOwnerAccount} = require("../truffle/lib/defaultOwnerAccount");
 const {trust} = require("../truffle/lib/trust");
@@ -24,9 +25,8 @@ function createEdges(nodeIds) {
 module.exports = async function (addresses) {
     const safeFactory = await getSafeFactory(addresses);
     addresses.otherSafes = {};
+    addresses.otherOrgaSafes = {};
 
-
-    const signups = [];
     for (let i = 0; i < 10; i++) {
         const newSafe = await safeFactory.deploySafe({
             safeAccountConfig: {
@@ -35,15 +35,20 @@ module.exports = async function (addresses) {
             }
         });
 
-        console.log(`Signing up ${newSafe.getAddress()} at hub ${addresses.hubContract} ..`)
-        await hubSignup(newSafe, addresses.hubContract);
-
-        addresses.otherSafes[newSafe.getAddress()] = newSafe;
+        if (i % 2 === 0) {
+            console.log(`Signing up ${newSafe.getAddress()} as person at the hub ${addresses.hubContract} ..`);
+            await hubSignup(newSafe, addresses.hubContract);
+            addresses.otherSafes[newSafe.getAddress()] = newSafe;
+        } else {
+            console.log(`Signing up ${newSafe.getAddress()} as organization at the hub ${addresses.hubContract} ..`);
+            await orgaHubSignup(newSafe, addresses.hubContract);
+            addresses.otherOrgaSafes[newSafe.getAddress()] = newSafe;
+        }
     }
 
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    const trustEdges = createEdges(Object.keys(addresses.otherSafes), 1);
+    const trustEdges = createEdges(Object.keys(addresses.otherSafes));
     const trusted = {};
 
     for (let i = 0; i < trustEdges.length; i++) {
@@ -67,7 +72,25 @@ module.exports = async function (addresses) {
         await new Promise(resolve => setTimeout(resolve, 500));
     }
 
+    for (let i = 0; i < Object.keys(addresses.otherOrgaSafes).length; i++) {
+        const orgaSafe = addresses.otherOrgaSafes[Object.keys(addresses.otherOrgaSafes)[i]];
+
+        console.log(`Orga safe ${orgaSafe.getAddress()} trusts all other safes ..`);
+
+        for (let j = 0; j < Object.keys(addresses.otherSafes).length; j++) {
+            const userSafe = addresses.otherSafes[Object.keys(addresses.otherSafes)[j]];
+            await trust(orgaSafe, addresses.hubContract, userSafe.getAddress(), 100);
+        }
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     addresses.otherSafes = Object.keys(addresses.otherSafes).reduce((acc, key) => {
+        acc.push(key);
+        return acc;
+    }, []);
+
+    addresses.otherOrgaSafes = Object.keys(addresses.otherOrgaSafes).reduce((acc, key) => {
         acc.push(key);
         return acc;
     }, []);
