@@ -2,7 +2,6 @@ FROM node:alpine
 
 WORKDIR /blabb/dapp
 
-COPY ganache_with_accounts.sh /blabb/dapp
 COPY hardhat.config.js /blabb/dapp
 
 RUN cd /blabb/dapp && npm init -y

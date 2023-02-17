@@ -27,7 +27,7 @@ module.exports = async function (addresses) {
     addresses.otherSafes = {};
     addresses.otherOrgaSafes = {};
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 20; i++) {
         const newSafe = await safeFactory.deploySafe({
             safeAccountConfig: {
                 owners: [defaultOwnerAccount.address],
@@ -35,14 +35,14 @@ module.exports = async function (addresses) {
             }
         });
 
-        if (i % 2 === 0) {
-            console.log(`Signing up ${newSafe.getAddress()} as person at the hub ${addresses.hubContract} ..`);
-            await hubSignup(newSafe, addresses.hubContract);
-            addresses.otherSafes[newSafe.getAddress()] = newSafe;
-        } else {
+        if (i % 5 === 0) {
             console.log(`Signing up ${newSafe.getAddress()} as organization at the hub ${addresses.hubContract} ..`);
             await orgaHubSignup(newSafe, addresses.hubContract);
             addresses.otherOrgaSafes[newSafe.getAddress()] = newSafe;
+        } else {
+            console.log(`Signing up ${newSafe.getAddress()} as person at the hub ${addresses.hubContract} ..`);
+            await hubSignup(newSafe, addresses.hubContract);
+            addresses.otherSafes[newSafe.getAddress()] = newSafe;
         }
     }
 

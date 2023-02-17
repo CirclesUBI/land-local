@@ -3,24 +3,32 @@ export POSTGRES_USER
 export POSTGRES_DB
 export CONNECTION_STRING_ROOT="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
 
-file_path='/app/status/addresses.json'
+file_path="/app/status/addresses.json"
 
 if [ -f "$file_path" ]; then
-  echo "Using addresses from $file_path:"
-  INITIAL_USER_SAFE_ADDRESS=$(jq -r '.rootSafeContract' "$file_path")
-  INITIAL_USER_SAFE_OWNER_ADDRESS=$(jq -r '.defaultOwnerAccount.address' "$file_path")
-  INITIAL_ORG_SAFE_ADDRESS=$(jq -r '.operatorOrgaSafeContract' "$file_path")
-  INITIAL_ORG_SAFE_OWNER_ADDRESS=$(jq -r '.defaultOwnerAccount.address' "$file_path")
-  echo "INITIAL_USER_SAFE_ADDRESS: $INITIAL_USER_SAFE_ADDRESS"
-  echo "INITIAL_USER_SAFE_OWNER_ADDRESS: $INITIAL_USER_SAFE_OWNER_ADDRESS"
-  echo "INITIAL_ORG_SAFE_ADDRESS: $INITIAL_ORG_SAFE_ADDRESS"
-  echo "INITIAL_ORG_SAFE_OWNER_ADDRESS: $INITIAL_ORG_SAFE_OWNER_ADDRESS"
+    echo "Using addresses from $file_path:"
+    INITIAL_USER_SAFE_ADDRESS=$(jq -r '.rootSafeContract' "$file_path")
+    INITIAL_USER_SAFE_OWNER_ADDRESS=$(jq -r '.defaultOwnerAccount.address' "$file_path")
+    INITIAL_ORG_SAFE_ADDRESS=$(jq -r '.operatorOrgaSafeContract' "$file_path")
+    INITIAL_ORG_SAFE_OWNER_ADDRESS=$(jq -r '.defaultOwnerAccount.address' "$file_path")
+
+    echo "INITIAL_USER_SAFE_ADDRESS: ${INITIAL_USER_SAFE_ADDRESS}"
+    echo "INITIAL_USER_SAFE_OWNER_ADDRESS: ${INITIAL_USER_SAFE_OWNER_ADDRESS}"
+    echo "INITIAL_ORG_SAFE_ADDRESS: ${INITIAL_ORG_SAFE_ADDRESS}"
+    echo "INITIAL_ORG_SAFE_OWNER_ADDRESS: ${INITIAL_ORG_SAFE_OWNER_ADDRESS}"
+
+    for ADDRESS in $(jq -r '.otherSafes[]' $file_path); do
+        NAME="BLUBB"
+        OWNER=$(jq -r '.defaultOwnerAccount.address' $file_path)
+        echo "select add_seed_user('$ADDRESS', '$OWNER', '$NAME');" >> ./seed_users.sql
+    done
+
 else
   echo "Using addresses from environment variables:"
-  echo "INITIAL_USER_SAFE_ADDRESS: $INITIAL_USER_SAFE_ADDRESS"
-  echo "INITIAL_USER_SAFE_OWNER_ADDRESS: $INITIAL_USER_SAFE_OWNER_ADDRESS"
-  echo "INITIAL_ORG_SAFE_ADDRESS: $INITIAL_ORG_SAFE_ADDRESS"
-  echo "INITIAL_ORG_SAFE_OWNER_ADDRESS: $INITIAL_ORG_SAFE_OWNER_ADDRESS"
+  echo "INITIAL_USER_SAFE_ADDRESS: ${INITIAL_USER_SAFE_ADDRESS}"
+  echo "INITIAL_USER_SAFE_OWNER_ADDRESS: ${INITIAL_USER_SAFE_OWNER_ADDRESS}"
+  echo "INITIAL_ORG_SAFE_ADDRESS: ${INITIAL_ORG_SAFE_ADDRESS}"
+  echo "INITIAL_ORG_SAFE_OWNER_ADDRESS: ${INITIAL_ORG_SAFE_OWNER_ADDRESS}"
 fi
 
 export INITIAL_USER_SAFE_ADDRESS
@@ -48,8 +56,9 @@ else
   mv ./initial_user.tmp.sql ./initial_user.sql
 
   psql ${CONNECTION_STRING_ROOT} < ./initial_business_categories.sql
+  psql ${CONNECTION_STRING_ROOT} < ./insert_persons.sql
   psql ${CONNECTION_STRING_ROOT} < ./initial_user.sql
-  psql ${CONNECTION_STRING_ROOT} < ./initial_businesses.sql
+  psql ${CONNECTION_STRING_ROOT} < ./seed_users.sql
 
   touch /app/.ready
 fi
