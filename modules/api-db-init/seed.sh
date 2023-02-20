@@ -23,6 +23,12 @@ if [ -f "$file_path" ]; then
         echo "select add_seed_user('$ADDRESS', '$OWNER', '$NAME');" >> ./seed_users.sql
     done
 
+    for ADDRESS in $(jq -r '.otherOrgaSafes[]' $file_path); do
+        NAME="BLUBB (Orga)"
+        OWNER=$(jq -r '.defaultOwnerAccount.address' $file_path)
+        echo "select add_seed_org('$ADDRESS', '$OWNER', '$NAME');" >> ./seed_organizations.sql
+    done
+
 else
   echo "Using addresses from environment variables:"
   echo "INITIAL_USER_SAFE_ADDRESS: ${INITIAL_USER_SAFE_ADDRESS}"
@@ -55,10 +61,18 @@ else
   rm -f ./initial_user.sql
   mv ./initial_user.tmp.sql ./initial_user.sql
 
+  echo "Executing initial_business_categories.sql"
   psql ${CONNECTION_STRING_ROOT} < ./initial_business_categories.sql
+  echo "Executing insert_persons.sql"
   psql ${CONNECTION_STRING_ROOT} < ./insert_persons.sql
+  echo "Executing insert_organizations.sql"
+  psql ${CONNECTION_STRING_ROOT} < ./insert_organizations.sql
+  echo "Executing initial_user.sql"
   psql ${CONNECTION_STRING_ROOT} < ./initial_user.sql
+  echo "Executing seed_users.sql"
   psql ${CONNECTION_STRING_ROOT} < ./seed_users.sql
+  echo "Executing seed_organizations.sql"
+  psql ${CONNECTION_STRING_ROOT} < ./seed_organizations.sql
 
   touch /app/.ready
 fi

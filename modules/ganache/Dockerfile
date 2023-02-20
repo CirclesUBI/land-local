@@ -1,11 +1,11 @@
 FROM node:alpine
 
-WORKDIR /blabb/dapp
+WORKDIR /var/hardhat_node
 
-COPY hardhat.config.js /blabb/dapp
+COPY hardhat.config.js /var/hardhat_node
 
-RUN cd /blabb/dapp && npm init -y
-RUN cd /blabb/dapp && npm i hardhat
+RUN cd /var/hardhat_node && npm init -y
+RUN cd /var/hardhat_node && npm i hardhat
 
 EXPOSE 8545
 

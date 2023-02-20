@@ -179,7 +179,7 @@ services:
     ports:
       - 8545:8545
     volumes:
-      - ${PWD}/.state/ganache:/var/ganache-db
+      - ${PWD}/.state/ganache:/var/hardhat_node
 
   ganache-init:
     depends_on:
