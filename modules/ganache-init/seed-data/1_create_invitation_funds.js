@@ -3,6 +3,7 @@ const Web3 = require("web3");
 const {getSafeFactory} = require("../truffle/lib/getSafeFactory");
 const {orgaHubSignup} = require("../truffle/lib/orgaHubSignup");
 const {defaultOwnerAccount} = require("../truffle/lib/defaultOwnerAccount");
+const util = require("util");
 
 module.exports = async function (addresses) {
     const safeFactory = await getSafeFactory(addresses);
@@ -13,7 +14,7 @@ module.exports = async function (addresses) {
             threshold: 1
         }
     });
-    addresses.rootSafeContract = profileSafe.getAddress();
+    addresses.rootSafeContract = profileSafe.getAddress().toLowerCase();
 
     const orgaSafe = await safeFactory.deploySafe({
         safeAccountConfig: {
@@ -21,7 +22,7 @@ module.exports = async function (addresses) {
             threshold: 1
         }
     });
-    addresses.operatorOrgaSafeContract = orgaSafe.getAddress();
+    addresses.operatorOrgaSafeContract = orgaSafe.getAddress().toLowerCase();
 
     await orgaHubSignup(orgaSafe, addresses.hubContract);
 
@@ -31,7 +32,7 @@ module.exports = async function (addresses) {
             threshold: 1
         }
     });
-    addresses.invitationFundsSafeContract = invitationFundsSafe.getAddress();
+    addresses.invitationFundsSafeContract = invitationFundsSafe.getAddress().toLowerCase();
 
     console.log("Sending 100 Eth invitation funds to:", invitationFundsSafe.getAddress());
     await sendFunds(new Web3.utils.BN("10000000000000000000"), invitationFundsSafe.getAddress());

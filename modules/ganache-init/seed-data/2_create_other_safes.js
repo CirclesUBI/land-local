@@ -23,6 +23,7 @@ function createEdges(nodeIds) {
 }
 
 module.exports = async function (addresses) {
+
     const safeFactory = await getSafeFactory(addresses);
     addresses.otherSafes = {};
     addresses.otherOrgaSafes = {};
@@ -36,13 +37,13 @@ module.exports = async function (addresses) {
         });
 
         if (i % 5 === 0) {
-            console.log(`Signing up ${newSafe.getAddress()} as organization at the hub ${addresses.hubContract} ..`);
+            console.log(`Signing up ${newSafe.getAddress().toLowerCase()} as organization at the hub ${addresses.hubContract} ..`);
             await orgaHubSignup(newSafe, addresses.hubContract);
-            addresses.otherOrgaSafes[newSafe.getAddress()] = newSafe;
+            addresses.otherOrgaSafes[newSafe.getAddress().toLowerCase()] = newSafe;
         } else {
-            console.log(`Signing up ${newSafe.getAddress()} as person at the hub ${addresses.hubContract} ..`);
+            console.log(`Signing up ${newSafe.getAddress().toLowerCase()} as person at the hub ${addresses.hubContract} ..`);
             await hubSignup(newSafe, addresses.hubContract);
-            addresses.otherSafes[newSafe.getAddress()] = newSafe;
+            addresses.otherSafes[newSafe.getAddress().toLowerCase()] = newSafe;
         }
     }
 
@@ -61,7 +62,7 @@ module.exports = async function (addresses) {
         }
 
         const limit = Math.round(50 + limitPrng() * 50);
-        await trust(canSendToSafe, addresses.hubContract, userSafe.getAddress(), limit);
+        await trust(canSendToSafe, addresses.hubContract, userSafe.getAddress().toLowerCase(), limit);
 
         if (!trusted[edge[0]]) {
             trusted[edge[0]] = [edge[1]];
@@ -75,23 +76,23 @@ module.exports = async function (addresses) {
     for (let i = 0; i < Object.keys(addresses.otherOrgaSafes).length; i++) {
         const orgaSafe = addresses.otherOrgaSafes[Object.keys(addresses.otherOrgaSafes)[i]];
 
-        console.log(`Orga safe ${orgaSafe.getAddress()} trusts all other safes ..`);
+        console.log(`Orga safe ${orgaSafe.getAddress().toLowerCase()} trusts all other safes ..`);
 
         for (let j = 0; j < Object.keys(addresses.otherSafes).length; j++) {
             const userSafe = addresses.otherSafes[Object.keys(addresses.otherSafes)[j]];
-            await trust(orgaSafe, addresses.hubContract, userSafe.getAddress(), 100);
+            await trust(orgaSafe, addresses.hubContract, userSafe.getAddress().toLowerCase(), 100);
         }
     }
 
     await new Promise(resolve => setTimeout(resolve, 500));
 
     addresses.otherSafes = Object.keys(addresses.otherSafes).reduce((acc, key) => {
-        acc.push(key);
+        acc.push(key.toLowerCase());
         return acc;
     }, []);
 
     addresses.otherOrgaSafes = Object.keys(addresses.otherOrgaSafes).reduce((acc, key) => {
-        acc.push(key);
+        acc.push(key.toLowerCase());
         return acc;
     }, []);
 

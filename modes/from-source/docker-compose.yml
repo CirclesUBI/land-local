@@ -89,7 +89,9 @@ services:
       INITIAL_USER_EMAIL: ${API_DATA_INITIAL_USER_EMAIL}
       APP_URL: ${FRONTEND_APP_URL}
     volumes:
-      - ${PWD}/.state/ganache-init/status/:/app/status/
+      - ${PWD}/.state/ganache-init/status/:/app/status/       # Required to access the addresses of the deployed contracts
+      - ${PWD}/.state/static-content/public:/public           # Required to provide the generated invitation QR codes to the user
+      - ${PWD}/../../../api-server:/app/api-server
 
   api-server:
     build:
@@ -179,7 +181,8 @@ services:
     ports:
       - 8545:8545
     volumes:
-      - ${PWD}/.state/ganache:/var/hardhat_node
+      #- ${PWD}/.state/ganache:/usr/src/app/node_modules/hardhat/internal/core/node/data
+      - ${PWD}/.state/ganache:/var/ganache-db
 
   ganache-init:
     depends_on:
@@ -322,6 +325,7 @@ services:
     depends_on:
       - frontend
       - api-server
+      - static-content
     ports:
       - "80:80"
       - "443:443"
@@ -330,8 +334,19 @@ services:
       - internal
     volumes:
       - ${PWD}/../../modules/caddy-src:/etc/caddy/
-      - ${PWD}/.state/caddy/data:/data
-      - ${PWD}/.state/caddy/config:/config
+
+  static-content:
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "1234:80"
+    depends_on:
+      - api-db-init
+    networks:
+      - internal
+    volumes:
+      - ${PWD}/../../modules/static-content:/etc/caddy/
+      - ${PWD}/.state/static-content/public:/var/www
 
 networks:
   internal:

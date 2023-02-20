@@ -13,9 +13,13 @@
         reverse_proxy * http://frontend:8080
     }
 
+    @static-content host static.localhost
+    handle @static-content {
+        reverse_proxy * http://static-content:80
+    }
+
     # Fallback for otherwise unhandled domains
     handle {
         abort
     }
-
 }

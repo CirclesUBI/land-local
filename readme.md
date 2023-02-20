@@ -58,18 +58,9 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
    ___Note:___ All '*-init' containers will exit and remain in that state once they finished their work. This is normal.
 4. First visit https://api-server.localhost and accept the self-signed certificate
 5. Then visit https://o-platform.localhost and accept the self-signed certificate to access the UI
-
-#### Known issues
-Especially on the first start in 'from-source'-mode it happens that the api-server hangs.
-The corresponding log output is `[nodemon] app crashed - waiting for file changes before starting.`.  
-To retry, either restart the container or change a file within the api-server's src-directory.
-
-#### Invitation code
-In the process of creating an account you will be asked for an invitation. 
-Present the following QR code to your webcam to proceed with the account setup.  
-
-![invitation code](docs/local_invitation.png)
-
+6. In the process of creating an account you will be asked for an invitation.  
+   Visit http://localhost:1234/ to get a list of possible inviters and their invitation QR-code.
+7. 
 
 ### Stop the stack
 1. `cd` to the mode directory (from-image or from-source) from which you started the stack
