@@ -3,7 +3,6 @@ const Web3 = require("web3");
 const {getSafeFactory} = require("../truffle/lib/getSafeFactory");
 const {orgaHubSignup} = require("../truffle/lib/orgaHubSignup");
 const {defaultOwnerAccount} = require("../truffle/lib/defaultOwnerAccount");
-const util = require("util");
 
 module.exports = async function (addresses) {
     const safeFactory = await getSafeFactory(addresses);
