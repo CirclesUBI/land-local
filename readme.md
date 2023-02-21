@@ -51,6 +51,14 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
   * api-server/
 
 ## Usage
+### Preparation
+1. Generate a unique CA certificate and key for your local development environment
+   ```shell
+   sudo ./install-ca.sh
+   ```
+   This will be used to for the TLS termination of the frontend and api-server by 'caddy'.
+   To remove the CA certificate and key, run `sudo ./uninstall-ca.sh`. 
+
 ### Run the stack
 1. Choose which mode you want to use and `cd` into the corresponding directory (modes/from-image or modes/from-source)
 2. Run `docker compose up -d`

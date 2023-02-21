@@ -334,6 +334,7 @@ services:
       - internal
     volumes:
       - ${PWD}/../../modules/caddy-src:/etc/caddy/
+      - ${PWD}/../../modules/caddy-src/certs:/etc/caddy/ca-certs
 
   static-content:
     image: caddy:latest
@@ -345,8 +346,21 @@ services:
     networks:
       - internal
     volumes:
-      - ${PWD}/../../modules/static-content:/etc/caddy/
+      - ${PWD}/../../modules/static-content/Caddyfile:/etc/caddy/Caddyfile
       - ${PWD}/.state/static-content/public:/var/www
+      - ${PWD}/../../modules/static-content/index.html:/var/www/index.html
+
+  container-monitor:
+    build:
+        dockerfile: ${PWD}/../../modules/container-monitor/Dockerfile
+        context: ${PWD}/../../modules/container-monitor
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - internal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
   internal:

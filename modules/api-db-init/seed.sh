@@ -98,6 +98,8 @@ else
     echo "QR code saved to ${name}.png"
   done
 
+  cp $file_path /public/addresses.json
+
   touch /app/.ready
 fi
 
