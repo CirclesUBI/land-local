@@ -20,7 +20,7 @@ if [[ $(uname) == "Linux" ]]; then
     TRUST_STORE_CMD="sudo update-ca-certificates"
 elif [[ $(uname) == "Darwin" ]]; then
     TRUST_STORE_DIR="/etc/openssl/certs"
-    TRUST_STORE_CMD="sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain"
+    TRUST_STORE_CMD="sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /etc/openssl/certs/ca.crt"
 fi
 
 # Copy the CA certificate to the system's trust store
