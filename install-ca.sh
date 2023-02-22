@@ -31,6 +31,7 @@ sudo ${TRUST_STORE_CMD}
 # Create the directories if they don't exist
 mkdir -p modules/caddy/certs
 mkdir -p modules/caddy-src/certs
+mkdir -p /etc/openssl/certs
 cp ca.crt modules/caddy/certs/
 cp ca.crt modules/caddy-src/certs/
 cp ca.key modules/caddy/certs/
