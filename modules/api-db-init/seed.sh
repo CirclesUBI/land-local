@@ -94,7 +94,7 @@ else
   psql --tuples-only -c "select p.\"firstName\" as name, j.hash from \"Profile\" p join \"Job\" j on p.\"inviteTriggerId\" = j.id where p.\"firstName\" like 'Person_%';" $CONNECTION_STRING_ROOT | while read name hash; do
     # Generate QR code for hash
     hash=$(echo "$hash" | sed -e 's/^[[:space:]]*|[[:space:]]*//')
-    qrencode -s 10 -m 10 -o "/public/${name}.png" "https://api-server.localhost/trigger?hash=${hash}"
+    qrencode -s 10 -m 14 -o "/public/${name}.png" "https://api-server.localhost/trigger?hash=${hash}"
     echo "QR code saved to ${name}.png"
 
     ffmpeg -loop 1 -i "/public/${name}.png" -pix_fmt yuv420p -crf 30 -t 1 "/public/${name}.y4m"
