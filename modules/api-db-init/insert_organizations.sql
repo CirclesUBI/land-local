@@ -21,7 +21,7 @@ BEGIN
                                   "businessCategoryId", "businessHoursFriday", "businessHoursMonday", "businessHoursSaturday",
                                   "businessHoursSunday", "businessHoursThursday", "businessHoursTuesday", "businessHoursWednesday",
                                   "phoneNumber", lat, lon, "locationName", "canInvite", "surveyDataSessionId")
-    VALUES ('', safe_address, safe_owner_address, user_name, null, null, null, null, null, now(), now(), true, 'ORGANISATION', 0, 0,
+    VALUES ('', safe_address, safe_owner_address, user_name, null, 'https://pixabay.com/photos/autos-technology-vw-214033/', null, null, null, now(), now(), true, 'ORGANISATION', 0, 0,
             'EURS', 'I-', null, null, now(), null, true, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null, null, null, null, null, false, null) RETURNING id INTO profile_id;
 

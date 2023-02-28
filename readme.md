@@ -1,3 +1,19 @@
+```bash
+daniel@daniel-XPS-15-9520:~/src/CirclesUBI/land-local/modes/from-source$ cd ../..
+daniel@daniel-XPS-15-9520:~/src/CirclesUBI/land-local$ mkdir -p $PWD/CA
+daniel@daniel-XPS-15-9520:~/src/CirclesUBI/land-local$ export CAROOT=$PWD/CA
+daniel@daniel-XPS-15-9520:~/src/CirclesUBI/land-local$ mkcert -CAROOT
+/home/daniel/src/CirclesUBI/land-local/CA
+daniel@daniel-XPS-15-9520:~/src/CirclesUBI/land-local$ mkcert -install
+Created a new local CA 💥
+The local CA is now installed in the system trust store! ⚡️
+The local CA is now installed in the Firefox and/or Chrome/Chromium trust store (requires browser restart)! 🦊
+
+daniel@daniel-XPS-15-9520:~/src/CirclesUBI/land-local$ 
+```
+
+
+
 # Circles.land development environment
 This repository bundles all components of the circles.land server and client software
 in a Docker Compose environment that you can use for development on your local machine.
@@ -51,6 +67,16 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
   * api-server/
 
 ## Usage
+
+### Cleanup from previous versions
+If you used a previous version of this repository, you might have to clean up some files and directories.
+```shell
+~/src/CirclesUBI/api-server$ sudo find . -name "node_modules" -type d -exec rm -rf {} +
+~/src/CirclesUBI/api-server$ sudo find . -name "dist" -type d -exec rm -rf {} +
+~/src/CirclesUBI/o-platform$ sudo find . -name "node_modules" -type d -exec rm -rf {} +
+~/src/CirclesUBI/o-platform$ sudo find . -name "dist" -type d -exec rm -rf {} +
+```
+
 ### Preparation
 1. Generate a unique CA certificate and key for your local development environment
    ```shell
@@ -61,7 +87,7 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
 
 ### Run the stack
 1. Choose which mode you want to use and `cd` into the corresponding directory (modes/from-image or modes/from-source)
-2. Run `docker compose up -d`
+2. Run `USERID=$UID export GROUPID=$GID docker compose up -d`
 3. Run `watch docker compose ps` and wait until all services are started and healthy.
 
 ### Access the UI

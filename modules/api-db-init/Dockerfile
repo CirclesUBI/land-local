@@ -3,7 +3,7 @@ FROM node:latest
 WORKDIR /app
 
 RUN apt update
-RUN apt install -y gettext-base git postgresql-client jq qrencode
+RUN apt install -y gettext-base git postgresql-client jq qrencode ffmpeg
 
 RUN npm install bip39
 

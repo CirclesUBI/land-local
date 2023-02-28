@@ -262,6 +262,7 @@ services:
       UPSTREAM_HEALTH_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_HEALTH_ENDPOINTS}
 
   frontend:
+    user: "${USERID}"
     depends_on:
       - api-server
     restart: unless-stopped
@@ -322,10 +323,6 @@ services:
   caddy:
     image: caddy:latest
     restart: unless-stopped
-    depends_on:
-      - frontend
-      - api-server
-      - static-content
     ports:
       - "80:80"
       - "443:443"
@@ -334,7 +331,8 @@ services:
       - internal
     volumes:
       - ${PWD}/../../modules/caddy-src:/etc/caddy/
-      - ${PWD}/../../modules/caddy-src/certs:/etc/caddy/ca-certs
+      - ${PWD}/.state/caddy/data:/data
+      - ${PWD}/../../modules/caddy-src/ca-certs:/etc/caddy/ca-certs
 
   static-content:
     image: caddy:latest

@@ -7,19 +7,28 @@ elif [[ $(uname) == "Darwin" ]]; then
   TRUST_STORE_CMD="sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain"
 fi
 
-# Check if one of the following files exists: modules/caddy/certs/, modules/caddy-src/certs/, modules/caddy/certs/, modules/caddy-src/certs/
-if [ -f modules/caddy/certs/ca.crt ] || [ -f modules/caddy-src/certs/ca.crt ] || [ -f modules/caddy/certs/ca.crt ] || [ -f modules/caddy-src/certs/ca.crt ]; then
+# Check if one of the following directories exists: modules/caddy/certs/, modules/caddy-src/certs/ or file CERT_FILENAME_PREFIX
+if [[ -d modules/caddy/ca-certs/ ]] || [[ -d modules/caddy-src/ca-certs/ ]] || [[ -f CERT_FILENAME_PREFIX ]]; then
 
-  echo "Removing CA certificate from the system's trust store..."
-
-  # remove the cert from the trust store
-  sudo rm "${TRUST_STORE_DIR}/ca.crt"
+  # Read the filename prefix from the CERT_FILENAME_PREFIX file
+  FILENAME_PREFIX=$(cat CERT_FILENAME_PREFIX)
 
   echo "Removing CA certificate from the modules/caddy/certs/ and modules/caddy-src/certs/ directories..."
 
   # delete the cert from the modules/caddy/certs/ and modules/caddy-src/certs/ directories
-  rm -f modules/caddy/certs/ca.crt
-  rm -f modules/caddy-src/certs/ca.crt
-  rm -f modules/caddy/certs/ca.key
-  rm -f modules/caddy-src/certs/ca.key
+  sudo rm -r -f modules/caddy/ca-certs
+  sudo rm -r -f modules/caddy-src/ca-certs
+
+  echo "Removing CA certificate from the system's trust store..."
+
+  # Read the filename prefix from the CERT_FILENAME_PREFIX file
+  FILENAME_PREFIX=$(cat CERT_FILENAME_PREFIX)
+
+  # Remove the cert file from the system's trust store
+  sudo rm "${TRUST_STORE_DIR}/${FILENAME_PREFIX}-ca.crt"
+  sudo ${TRUST_STORE_CMD}
+
+  sudo rm ca.crt
+  sudo rm ca.key
+  sudo rm CERT_FILENAME_PREFIX
 fi
