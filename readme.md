@@ -94,6 +94,14 @@ docker compose down \
 docker compose up -d
 ```
 
+### How to Override api-server and frontend for local debugging
+1. run the docker as described above
+2. stop the api-server and frontend container
+3. make sure you have the launch.json (for Visual Studio Code) from secrets.circlesubi.id and it contains the correct API Keys
+4. start the api inside your Visual Studio
+5. in o-platform make sure you have the .env.override file from secrets.circlesubi.id
+6. go to o-platform/shell and type: yarn override to start the frontend.
+
 ### Troubleshooting
 #### UI doesn't load
 1. Check the 'frontend' logs to see if it is running properly
