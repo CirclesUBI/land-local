@@ -1,8 +1,18 @@
-api-server.localhost {
-    reverse_proxy * http://api-server:8989
-    tls internal
+{
+    # Set the CA certificate and key paths
+    ca_certificate /ca-certs/ca.crt
+    ca_key /ca-certs/ca.key
 }
-o-platform.localhost {
-    reverse_proxy * http://frontend:80
-    tls internal
+
+*.localhost {
+    tls {
+        ca_root /ca-certs/ca.crt
+    }
+
+    api-server.localhost {
+        reverse_proxy * http://api-server:8989
+    }
+    o-platform.localhost {
+        reverse_proxy * http://frontend:80
+    }
 }

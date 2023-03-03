@@ -1,0 +1,71 @@
+<html DOCTYPE="html" lang="en">
+<head>
+    <title>Status</title>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+    </style>
+    <script>
+        async function loadAddresses() {
+            const response = await fetch('http://localhost:1234/addresses.json')
+            const addresses = await response.json()
+            const contractAddresses = document.getElementById('contractAddresses')
+            contractAddresses.innerHTML = JSON.stringify(addresses, null, 2);
+
+            // fetch 'key_phrase.txt'
+            const response2 = await fetch('http://localhost:1234/key_phrase.txt')
+            const keyPhrase = await response2.text()
+            const keyPhraseElement = document.getElementById('keyPhrase')
+            keyPhraseElement.innerHTML = keyPhrase;
+        }
+
+        function toggleStatus() {
+            const addresses = document.getElementById('contractAddresses')
+            if (addresses.style.display === 'none') {
+                addresses.style.display = 'block'
+            } else {
+                addresses.style.display = 'none'
+            }
+
+            const toggleStatusIndicator = document.getElementById('toggleStatusIndicator')
+            if (toggleStatusIndicator.innerHTML === '[-]') {
+                toggleStatusIndicator.innerHTML = '[+]'
+            } else {
+                toggleStatusIndicator.innerHTML = '[-]'
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAddresses();
+        });
+    </script>
+</head>
+<body>
+<fieldset name="preview">
+    <legend>Preview</legend>
+    <fieldset name="api-preview" style="display: inline-block; width: 45%;">
+        <legend>API Preview</legend>
+            <iframe src="https://api-server.localhost" width="100%" height="400" style="border: none;"></iframe>
+    </fieldset>
+    <fieldset name="o-platform-preview" style="display: inline-block; width: 45%">
+        <legend>Frontend Preview</legend>
+            <iframe src="https://o-plaform.localhost" width="100%" height="400" style="border: none;"></iframe>
+    </fieldset>
+</fieldset>
+<fieldset name="addresses">
+    <legend>Contract addresses <a onclick="toggleStatus()"><span><b id="toggleStatusIndicator" style="cursor: pointer;">[+]</b></span></a> </legend>
+    <pre id="contractAddresses" style="display: none;">
+    </pre>
+</fieldset>
+<fieldset name="keyphrase">
+    <legend>Keyphrase</legend>
+    <pre id="keyPhrase">
+    </pre>
+</fieldset>
+</body>
+</html>

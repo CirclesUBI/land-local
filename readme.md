@@ -51,25 +51,32 @@ ___Note:___ This mode assumes you cloned the repos into the following FS-hierarc
   * api-server/
 
 ## Usage
+### Preparation
+1. Generate a unique CA certificate and key for your local development environment
+   ```shell
+   sudo ./install-ca.sh
+   ```
+   This will be used to for the TLS termination of the frontend and api-server by 'caddy'.
+   To remove the CA certificate and key, run `sudo ./uninstall-ca.sh`. 
+
 ### Run the stack
 1. Choose which mode you want to use and `cd` into the corresponding directory (modes/from-image or modes/from-source)
 2. Run `docker compose up -d`
-3. Run `watch docker compose ps` and wait until all services become available (aren't restarting)  
-   ___Note:___ All '*-init' containers will exit and remain in that state once they finished their work. This is normal.
-4. First visit https://api-server.localhost and accept the self-signed certificate
-5. Then visit https://o-platform.localhost and accept the self-signed certificate to access the UI
+3. Run `watch docker compose ps` and wait until all services are started and healthy.
 
-#### Known issues
-Especially on the first start in 'from-source'-mode it happens that the api-server hangs.
-The corresponding log output is `[nodemon] app crashed - waiting for file changes before starting.`.  
-To retry, either restart the container or change a file within the api-server's src-directory.
-
-#### Invitation code
-In the process of creating an account you will be asked for an invitation. 
-Present the following QR code to your webcam to proceed with the account setup.  
-
-![invitation code](docs/local_invitation.png)
-
+### Access the UI
+1. First visit https://api-server.localhost and accept the self-signed certificate
+2. To login, visit https://o-platform.localhost/#/passport/actions/login/0 and accept the self-signed certificate
+3. Set a PIN
+4. Complete the survey
+5. Scan the invite code from http://localhost:1234/Person_1.png and click "Next"
+6. Click "Sign-up now"
+7. Click "Sign-up now" again
+8. When asked if you want to import or create a new account, click "Import existing"
+9. Copy the keyphrase from http://localhost:1234/key_phrase.txt into the textbox and click "Connect recovery code"
+10. Select one of the safes which name starts with "Person_" and click "Connect"
+11. Next, click "Proceed"
+12. Finished. You should now see the dashboard at https://o-platform.localhost/#/home
 
 ### Stop the stack
 1. `cd` to the mode directory (from-image or from-source) from which you started the stack

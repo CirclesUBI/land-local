@@ -1,0 +1,4 @@
+http://localhost:80 {
+    root * /var/www
+    file_server browse
+}

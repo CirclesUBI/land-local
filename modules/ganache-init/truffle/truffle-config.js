@@ -59,11 +59,12 @@ module.exports = {
 
   networks: {
     development: {
-     host: "ganache",     // Localhost (default: none)
+     host: "ganache",       // Localhost (default: none)
      port: 8545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)
     }
   },
+
 
   // Set default mocha options here, use special reporters, etc.
   mocha: {
