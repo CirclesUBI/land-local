@@ -246,8 +246,10 @@ services:
       - ${PWD}/.state/pathfinder:/var/pathfinder2/data
 
   pathfinder-proxy:
-    image: circlesubi/pathfinder-proxy:dev
     restart: unless-stopped
+    build:
+      dockerfile: ${PWD}/../../modules/pathfinder-proxy-src/Dockerfile
+      context: ${PWD}/../../modules/pathfinder-proxy-src
     depends_on:
       - pathfinder2-updater
       - pathfinder2
@@ -260,6 +262,8 @@ services:
       CORS_ORIGINS: ${PATHFINDER_PROXY_CORS_ORIGINS}
       UPSTREAM_SERVICE_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_SERVICE_ENDPOINTS}
       UPSTREAM_HEALTH_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_HEALTH_ENDPOINTS}
+    volumes:
+      - ${PWD}/../../../pathfinder-proxy:/pathfinder-proxy
 
   frontend:
     user: "${USERID}"
