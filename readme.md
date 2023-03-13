@@ -91,8 +91,8 @@ If you used a previous version of this repository, you might have to clean up so
 3. Run `watch docker compose ps` and wait until all services are started and healthy.
 
 ### Access the UI
-1. First visit https://api-server.localhost and accept the self-signed certificate
-2. To login, visit https://o-platform.localhost/#/passport/actions/login/0 and accept the self-signed certificate
+1. First visit https://api-server.circlesubi.localhost and accept the self-signed certificate
+2. To login, visit https://o-platform.circlesubi.localhost/#/passport/actions/login/0 and accept the self-signed certificate
 3. Set a PIN
 4. Complete the survey
 5. Scan the invite code from http://localhost:1234/Person_1.png and click "Next"
@@ -102,7 +102,7 @@ If you used a previous version of this repository, you might have to clean up so
 9. Copy the keyphrase from http://localhost:1234/key_phrase.txt into the textbox and click "Connect recovery code"
 10. Select one of the safes which name starts with "Person_" and click "Connect"
 11. Next, click "Proceed"
-12. Finished. You should now see the dashboard at https://o-platform.localhost/#/home
+12. Finished. You should now see the dashboard at https://o-platform.circlesubi.localhost/#/home
 
 ### Stop the stack
 1. `cd` to the mode directory (from-image or from-source) from which you started the stack

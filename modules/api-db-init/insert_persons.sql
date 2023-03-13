@@ -11,7 +11,7 @@ DECLARE
     payload text;
     payload_hash text;
     profile_id integer;
-    app_url text = 'https://o-platform.localhost/#/dashboard';
+    app_url text = 'https://o-platform.circlesubi.localhost/#/dashboard';
 BEGIN
     payload = '{"id": "Invitation link for '||safe_address||'", "_kind": "perpetualTrigger", "_topic": "inviteCodeFromExternalTrigger", "_identity": "Invitation link for '||safe_address||'", "redirectUrl": "'||app_url||'", "inviterSafeAddress": "'|| safe_address ||'"}';
     payload_hash = encode(digest((payload::text||E'\n')::bytea, 'sha1'), 'hex');

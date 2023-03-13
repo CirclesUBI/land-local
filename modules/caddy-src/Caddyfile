@@ -17,13 +17,13 @@
        issuer internal
     }
 
-    @api-server host api-server.localhost
+    @api-server host api-server.circlesubi.localhost
     handle @api-server {
         reverse_proxy /graphql ws://api-server:8989
         reverse_proxy * http://api-server:8989
     }
 
-    @o-platform host o-platform.localhost
+    @o-platform host o-platform.circlesubi.localhost
     handle @o-platform {
         reverse_proxy /ws ws://frontend:8080
         reverse_proxy * http://frontend:8080

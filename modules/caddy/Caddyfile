@@ -17,10 +17,10 @@
        issuer internal
     }
 
-    api-server.localhost {
+    api-server.circlesubi.localhost {
         reverse_proxy * http://api-server:8989
     }
-    o-platform.localhost {
+    o-platform.circlesubi.localhost {
         reverse_proxy * http://frontend:80
     }
 }

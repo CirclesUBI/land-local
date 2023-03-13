@@ -11,7 +11,7 @@
               "match": [
                 {
                   "host": [
-                    "*.localhost"
+                    "*.circlesubi.localhost"
                   ]
                 }
               ],
@@ -62,7 +62,7 @@
                       "match": [
                         {
                           "host": [
-                            "api-server.localhost"
+                            "api-server.circlesubi.localhost"
                           ]
                         }
                       ]
@@ -110,7 +110,7 @@
                       "match": [
                         {
                           "host": [
-                            "o-platform.localhost"
+                            "o-platform.circlesubi.localhost"
                           ]
                         }
                       ]
@@ -139,7 +139,7 @@
                       "match": [
                         {
                           "host": [
-                            "container-monitor.localhost"
+                            "container-monitor.circlesubi.localhost"
                           ]
                         }
                       ]
@@ -168,7 +168,7 @@
                       "match": [
                         {
                           "host": [
-                            "static.localhost"
+                            "static.circlesubi.localhost"
                           ]
                         }
                       ]
@@ -204,8 +204,8 @@
       "certificate_authorities": {
         "local": {
           "install_trust": false,
-          "name": "local",
-          "root_common_name": "local",
+          "name": "localhost",
+          "root_common_name": "localhost",
           "root": {
             "certificate": "/etc/caddy/ca-certs/ca.crt",
             "private_key": "/etc/caddy/ca-certs/ca.key"
@@ -218,7 +218,7 @@
         "policies": [
           {
             "subjects": [
-              "*.localhost"
+              "*.circlesubi.localhost"
             ],
             "issuers": [
               {
