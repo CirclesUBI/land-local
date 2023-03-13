@@ -343,8 +343,6 @@ services:
   static-content:
     image: caddy:latest
     restart: unless-stopped
-    ports:
-      - "1234:80"
     depends_on:
       - api-db-init
     networks:

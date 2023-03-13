@@ -12,13 +12,13 @@
     </style>
     <script>
         async function loadAddresses() {
-            const response = await fetch('http://localhost:1234/addresses.json')
+            const response = await fetch('/addresses.json')
             const addresses = await response.json()
             const contractAddresses = document.getElementById('contractAddresses')
             contractAddresses.innerHTML = JSON.stringify(addresses, null, 2);
 
             // fetch 'key_phrase.txt'
-            const response2 = await fetch('http://localhost:1234/key_phrase.txt')
+            const response2 = await fetch('/key_phrase.txt')
             const keyPhrase = await response2.text()
             const keyPhraseElement = document.getElementById('keyPhrase')
             keyPhraseElement.innerHTML = keyPhrase;
@@ -54,7 +54,7 @@
     </fieldset>
     <fieldset name="o-platform-preview" style="display: inline-block; width: 45%">
         <legend>Frontend Preview</legend>
-            <iframe src="https://o-plaform.localhost" width="100%" height="400" style="border: none;"></iframe>
+            <iframe src="https://o-platform.circlesubi.localhost/" width="100%" height="400" style="border: none;"></iframe>
     </fieldset>
 </fieldset>
 <fieldset name="addresses">
