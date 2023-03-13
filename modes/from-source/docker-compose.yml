@@ -325,7 +325,9 @@ services:
       "
 
   caddy:
-    image: caddy:latest
+    build:
+      dockerfile: ${PWD}/../../modules/caddy-src/Dockerfile
+      context: ${PWD}/../../modules/caddy-src
     restart: unless-stopped
     ports:
       - "80:80"

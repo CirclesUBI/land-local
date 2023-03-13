@@ -1,3 +1,17 @@
+{
+    email admin@localhost
+    pki {
+ 		ca development-ca {
+ 			name                  development-ca
+ 			root_cn               development-ca
+ 			root {
+ 				cert   /etc/caddy/ca-certs/ca.crt
+ 				key    /etc/caddy/ca-certs/ca.key
+ 			}
+ 		}
+ 	}
+}
+
 *.localhost {
     tls {
        issuer internal
