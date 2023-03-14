@@ -41,7 +41,9 @@ services:
       POSTGRES_PASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
 
   api-db:
-    image: postgis/postgis:15-3.3
+    build:
+      dockerfile: ${PWD}/../../modules/api-db-src/Dockerfile
+      context: ${PWD}/../../modules/api-db-src
     restart: unless-stopped
     ports:
       - 5432:5432
@@ -147,8 +149,8 @@ services:
 
   blockchain-indexer:
     build:
-      dockerfile: ${PWD}/../../modules/blockchain-indexer/Dockerfile
-      context: ${PWD}/../../modules/blockchain-indexer
+      dockerfile: ${PWD}/../../modules/blockchain-indexer-src/Dockerfile
+      context: ${PWD}/../../../blockchain-indexer
     expose:
       - 8675
     depends_on:
@@ -220,7 +222,9 @@ services:
     depends_on:
       - pathfinder2
       - blockchain-indexer
-    image: circlesubi/pathfinder2-updater:dev
+    build:
+      dockerfile: ${PWD}/../../modules/pathfinder2-updater-src/Dockerfile
+      context: ${PWD}/../../../pathfinder2-updater
     restart: unless-stopped
     networks:
       - internal
@@ -234,7 +238,9 @@ services:
       - ${PWD}/.state/pathfinder:/var/pathfinder2/data
 
   pathfinder2:
-    image: circlesubi/pathfinder2:eeee335
+    build:
+      dockerfile: ${PWD}/../../modules/pathfinder2-src/Dockerfile
+      context: ${PWD}/../../../pathfinder2
     restart: unless-stopped
     networks:
       - internal

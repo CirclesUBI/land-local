@@ -19,5 +19,5 @@ else
   echo "INVITATION_FUNDS_SAFE_KEY: $INVITATION_FUNDS_SAFE_KEY"
 fi
 
-WORKDIR /usr/o-platform/api-server/dist
+cd /usr/o-platform/api-server/dist
 node /usr/o-platform/api-server/dist/main.js
