@@ -16,7 +16,7 @@ else
     echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.zshrc
     source ~/.zshrc
   else
-    echo "Please install 'asdf'.
+    echo "Please install 'asdf'"
   fi
 fi
 
