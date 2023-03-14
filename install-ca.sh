@@ -20,26 +20,21 @@ else
   fi
 fi
 
-asdf plugin-add mkcert || exit
-asdf install mkcert latest || exit
-asdf global mkcert latest || exit
-
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  ROOT_CA_PATH=~/.local/share/mkcert
-fi
+asdf plugin-add mkcert
+asdf install mkcert latest
+asdf global mkcert latest
 
 if [[ -f $ROOT_CA_PATH/rootCA-key.pem ]] && [[ -f $ROOT_CA_PATH/rootCA.pem ]]; then
   echo "mkcert -install already ran"
 else
   mkcert -install
-  # copy the cert to the modules/caddy/ca-certs/ and modules/caddy-src/ca-certs/ directories
-  mkdir -p modules/caddy/ca-certs
-  cp -f "$ROOT_CA_PATH/rootCA.pem" modules/caddy/ca-certs/ca.crt
-  cp -f "$ROOT_CA_PATH/rootCA-key.pem" modules/caddy/ca-certs/ca.key
-
-  mkdir -p modules/caddy-src/ca-certs
-  cp -f "$ROOT_CA_PATH/rootCA.pem" modules/caddy-src/ca-certs/ca.crt
-  cp -f "$ROOT_CA_PATH/rootCA-key.pem" modules/caddy-src/ca-certs/ca.key
-
   echo "mkcert -install successful"
 fi
+
+mkdir -p modules/caddy/ca-certs
+cp -f "$ROOT_CA_PATH/rootCA.pem" modules/caddy/ca-certs/ca.crt
+cp -f "$ROOT_CA_PATH/rootCA-key.pem" modules/caddy/ca-certs/ca.key
+
+mkdir -p modules/caddy-src/ca-certs
+cp -f "$ROOT_CA_PATH/rootCA.pem" modules/caddy-src/ca-certs/ca.crt
+cp -f "$ROOT_CA_PATH/rootCA-key.pem" modules/caddy-src/ca-certs/ca.key
