@@ -12,7 +12,7 @@
  	}
 }
 
-*.localhost {
+*.circlesubi.localhost {
     tls {
        issuer internal
     }
