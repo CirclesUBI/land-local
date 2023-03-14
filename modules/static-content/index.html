@@ -11,6 +11,18 @@
         }
     </style>
     <script>
+
+        function reloadPreview() {
+            const apiPreview = document.getElementById('api-preview')
+            apiPreview.src = apiPreview.src
+
+            const frontendPreview = document.getElementById('frontend-preview')
+            frontendPreview.src = frontendPreview.src
+
+            const invitation = document.getElementById('invitation');
+            invitation.innerHTML = `<img src="https://static.circlesubi.localhost/Person_1.png" />`
+        }
+
         async function loadAddresses() {
             const response = await fetch('/addresses.json')
             const addresses = await response.json()
@@ -40,7 +52,14 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        setInterval(() => {
+            reloadPreview();
+            loadAddresses();
+        }, 10000);
+
+        // on loaded execute
+        document.addEventListener('DOMContentLoaded', function() {
+            reloadPreview();
             loadAddresses();
         });
     </script>
@@ -50,11 +69,11 @@
     <legend>Preview</legend>
     <fieldset name="api-preview" style="display: inline-block; width: 45%;">
         <legend>API Preview</legend>
-            <iframe src="https://api-server.circlesubi.localhost" width="100%" height="400" style="border: none;"></iframe>
+            <iframe id="api-preview" src="https://api-server.circlesubi.localhost" width="100%" height="300" style="border: none;"></iframe>
     </fieldset>
     <fieldset name="o-platform-preview" style="display: inline-block; width: 45%">
         <legend>Frontend Preview</legend>
-            <iframe src="https://o-platform.circlesubi.localhost/" width="100%" height="400" style="border: none;"></iframe>
+            <iframe id="frontend-preview" src="https://o-platform.circlesubi.localhost/" width="100%" height="300" style="border: none;"></iframe>
     </fieldset>
 </fieldset>
 <fieldset name="addresses">
@@ -66,6 +85,11 @@
     <legend>Keyphrase</legend>
     <pre id="keyPhrase">
     </pre>
+</fieldset>
+<fieldset name="invitation">
+    <legend>Invitation PNG</legend>
+    <div id="invitation">
+    </div>
 </fieldset>
 </body>
 </html>

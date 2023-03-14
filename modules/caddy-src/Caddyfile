@@ -29,12 +29,12 @@
         reverse_proxy * http://frontend:8080
     }
 
-    @container-monitor host container-monitor.localhost
+    @container-monitor host container-monitor.circlesubi.localhost
     handle @container-monitor {
         reverse_proxy * http://container-monitor:3000
     }
 
-    @static-content host static.localhost
+    @static-content host static.circlesubi.localhost
     handle @static-content {
         reverse_proxy * http://static-content:80
     }
