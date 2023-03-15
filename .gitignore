@@ -1,4 +1,6 @@
 .idea
 .state
 modules/other_chain_user/node_modules
+modules/caddy/ca-certs
+modules/caddy-src/ca-certs
 local.iml

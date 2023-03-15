@@ -272,7 +272,6 @@ services:
       - ${PWD}/../../../pathfinder-proxy:/pathfinder-proxy
 
   frontend:
-    user: "${USERID}"
     depends_on:
       - api-server
     restart: unless-stopped
@@ -295,7 +294,8 @@ services:
     volumes:
       - ${PWD}/../../../o-platform:/o-platform
     healthcheck:
-      test: ["CMD", "sh", "-c", "curl -f http://frontend:8080/bundle.js || exit 1"]
+      test: |
+        curl -s --head http://localhost:8080/bundle.js | head -n 1 | grep "HTTP.*200.*" && echo "File exists and was downloaded successfully" || { echo "File does not exist or could not be downloaded"; exit 1; }
       interval: 10s
       timeout: 10m
       retries: 500
@@ -380,12 +380,9 @@ services:
     build: 
       dockerfile: ${PWD}/../../modules/cypress-tests/Dockerfile
       context: ${PWD}/../../modules/cypress-tests/
-    networks:
-      - internal
+    network_mode: "host"
     depends_on:
       frontend:
-        condition: service_healthy
-      api-server:
         condition: service_healthy
 
 networks:
