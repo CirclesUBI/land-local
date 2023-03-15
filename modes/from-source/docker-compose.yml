@@ -294,6 +294,12 @@ services:
       - internal
     volumes:
       - ${PWD}/../../../o-platform:/o-platform
+    healthcheck:
+      test: ["CMD", "sh", "-c", "curl -f http://frontend:8080/bundle.js || exit 1"]
+      interval: 10s
+      timeout: 10m
+      retries: 500
+      start_period: 30s
 
   minio:
     image: minio/minio
@@ -369,6 +375,18 @@ services:
       - internal
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+
+  cypress-tests:
+    build: 
+      dockerfile: ${PWD}/../../modules/cypress-tests/Dockerfile
+      context: ${PWD}/../../modules/cypress-tests/
+    networks:
+      - internal
+    depends_on:
+      frontend:
+        condition: service_healthy
+      api-server:
+        condition: service_healthy
 
 networks:
   internal:
