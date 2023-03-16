@@ -381,6 +381,9 @@ services:
       dockerfile: ${PWD}/../../modules/cypress-tests/Dockerfile
       context: ${PWD}/../../modules/cypress-tests/
     network_mode: "host"
+    volumes:
+      - ${PWD}/.state/cypress-tests/screenshots:/o-platform-cypress/cypress/screenshots/
+      - ${PWD}/.state/cypress-tests/videos:/o-platform-cypress/cypress/videos/
     depends_on:
       frontend:
         condition: service_healthy
