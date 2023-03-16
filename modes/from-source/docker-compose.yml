@@ -385,7 +385,7 @@ services:
     volumes:
       - ${PWD}/.state/cypress-tests/screenshots:/o-platform-cypress/cypress/screenshots/
       - ${PWD}/.state/cypress-tests/videos:/o-platform-cypress/cypress/videos/
-      - ${PWD}/.state/static-content/public:/o-platform-cypress/fixtures/
+      - ${PWD}/.state/static-content/public:/o-platform-cypress/cypress/fixtures/
     depends_on:
       frontend:
         condition: service_healthy
