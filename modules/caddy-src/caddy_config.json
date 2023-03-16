@@ -31,7 +31,7 @@
                                   "handler": "reverse_proxy",
                                   "upstreams": [
                                     {
-                                      "dial": "ws://api-server:8989"
+                                      "dial": "api-server:8989"
                                     }
                                   ]
                                 }
