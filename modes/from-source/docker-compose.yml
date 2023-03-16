@@ -363,6 +363,7 @@ services:
       - ${PWD}/../../modules/static-content/Caddyfile:/etc/caddy/Caddyfile
       - ${PWD}/.state/static-content/public:/var/www
       - ${PWD}/../../modules/static-content/index.html:/var/www/index.html
+      - ${PWD}/.state/ganache-init/status/addresses.json:/var/www/addresses.json
 
   container-monitor:
     build:

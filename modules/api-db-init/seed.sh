@@ -100,7 +100,7 @@ else
     ffmpeg -loop 1 -i "/public/${name}.png" -pix_fmt yuv420p -crf 30 -t 1 "/public/${name}.y4m"
   done
 
-  cp $file_path /public/addresses.json
+  # cp $file_path /public/addresses.json
 
   touch /app/.ready
 fi
