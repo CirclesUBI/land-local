@@ -1,7 +1,10 @@
-FROM node:latest
+FROM fedora:37
 
-RUN apt-get update
-RUN apt-get install -y libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
+RUN dnf install -y \
+        chromium \
+        git \
+        nodejs npm \
+        xorg-x11-server-Xvfb gtk2-devel gtk3-devel libnotify-devel GConf2 nss libXScrnSaver alsa-lib
 
 RUN git clone https://github.com/CirclesUBI/o-platform-cypress.git 
 WORKDIR /o-platform-cypress
