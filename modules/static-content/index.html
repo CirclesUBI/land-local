@@ -34,6 +34,38 @@
             const keyPhrase = await response2.text()
             const keyPhraseElement = document.getElementById('keyPhrase')
             keyPhraseElement.innerHTML = keyPhrase;
+
+
+
+            let template = `
+EXTERNAL_DOMAIN="localhost"
+CONNECTION_STRING_RO="postgresql://postgres:postgres@localhost/api"
+APP_ID="api-server-docker"
+APP_URL="http://localhost:8080"
+ACCEPTED_ISSUER="dev.auth.circles.name"
+CORS_ORIGINS="http://localhost:8080"
+CONNECTION_STRING_RW="postgresql://postgres:postgres@localhost/api"
+DEBUG="true"
+BLOCKCHAIN_INDEX_DB_CONNECTION_STRING="postgresql://postgres:postgres@localhost:5433/index"
+BLOCKCHAIN_INDEX_WS_URL="ws://localhost:8675"
+BUCKET_ENDPOINT="fra1.digitaloceanspaces.com"
+RPC_GATEWAY_URL="http://localhost:8545"
+DELAY_START="0"
+INVITE_EOA="${addresses.defaultOwnerAccount.address}"
+INVITE_EOA_KEY="${addresses.defaultOwnerAccount.privateKey}"
+OPERATOR_ORGANISATION_ADDRESS="${addresses.operatorOrgaSafeContract}"
+INVITATION_FUNDS_SAFE_ADDRESS="${addresses.invitationFundsSafeContract}"
+INVITATION_FUNDS_SAFE_KEY="${addresses.defaultOwnerAccount.privateKey}"
+PATHFINDER_URL="http://localhost:8081"
+S3_AVATAR_FILES_BUCKET_ENDPOINT="http://localhost:9000"
+S3_AVATAR_FILES_BUCKET_NAME="avatar-images"
+S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX="http://localhost:9000/avatar-images/"
+S3_AVATAR_FILES_BUCKET_KEY_ID="admin"
+S3_AVATAR_FILES_BUCKET_KEY_SECRET="1234567890"
+`;
+
+            const envFileElement = document.getElementById('envFile')
+            envFileElement.innerHTML = template;
         }
 
         function toggleStatus() {
@@ -84,6 +116,11 @@
 <fieldset name="keyphrase">
     <legend>Keyphrase</legend>
     <pre id="keyPhrase">
+    </pre>
+</fieldset>
+<fieldset name="envFile">
+    <legend>Env file</legend>
+    <pre id="envFile">
     </pre>
 </fieldset>
 <fieldset name="invitation">
