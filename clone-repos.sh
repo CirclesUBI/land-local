@@ -39,7 +39,7 @@ if [ ! -d "pathfinder-proxy" ]; then
 fi
 
 # same with cypress-tests
-if [ ! -d "cypress-tests" ]; then
+if [ ! -d "o-platform-cypress" ]; then
   git clone https://github.com/CirclesUBI/o-platform-cypress.git
   (cd o-platform-cypress && git branch --show-current && git checkout feature/app-103-automated-e2e-testing-with-cypress)
 fi
