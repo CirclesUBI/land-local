@@ -3,26 +3,7 @@
 ROOT_CA_PATH=~/.local/share/mkcert
 if [[ "$OSTYPE" == "darwin"* ]]; then
   ROOT_CA_PATH=~/Library/Application\ Support/mkcert
-  brew install nss
 fi
-
-if [[ -f ~/.asdf/asdf.sh ]]; then
-  echo "asdf already installed"
-else
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    brew install coreutils curl git
-    git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.11.2
-    echo '. "$HOME/.asdf/asdf.sh"' >> ~/.zshrc
-    echo '. "$HOME/.asdf/completions/asdf.bash"' >> ~/.zshrc
-    source ~/.zshrc
-  else
-    echo "Please install 'asdf'"
-  fi
-fi
-
-asdf plugin-add mkcert
-asdf install mkcert latest
-asdf global mkcert latest
 
 if [[ -f $ROOT_CA_PATH/rootCA-key.pem ]] && [[ -f $ROOT_CA_PATH/rootCA.pem ]]; then
   echo "mkcert -install already ran"

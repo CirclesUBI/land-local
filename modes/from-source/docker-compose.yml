@@ -340,6 +340,9 @@ services:
     build:
       dockerfile: ${PWD}/../../modules/caddy-src/Dockerfile
       context: ${PWD}/../../modules/caddy-src
+    depends_on:
+      - api-server
+      - frontend
     restart: unless-stopped
     ports:
       - "80:80"
@@ -386,6 +389,8 @@ services:
       - ${PWD}/../../../o-platform-cypress/:/o-platform-cypress/
       - ${PWD}/.state/static-content/public:/o-platform-cypress/cypress/fixtures/
     depends_on:
+      caddy:
+        condition: service_started
       frontend:
         condition: service_healthy
 
