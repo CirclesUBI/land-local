@@ -65,6 +65,7 @@ _Ubuntu_:
 2) Install git and mkcert: ```sudo apt install git libnss3-tools mkcert```  
 
 _MacOS_:
+1) Install Docker Desktop for Mac: https://docs.docker.com/docker-for-mac/install/
 1) Install the xcode command line tools (open the Terminal and type 'git' + Enter)
 2) Install [homebrew](https://brew.sh/) and follow the instructions to add it to your $PATH.
 3) Install mkcert with homebrew: ```brew install nss mkcert```
@@ -81,7 +82,13 @@ git clone https://github.com/CirclesUBI/land-local.git
 ```
 
 ### Run the stack
-Change to the 'land-local' directory (`cd land-local`) and run `./start.sh` to clone the required repositories (they'll be cloned into the parent directory), create a CA and start the stack.
+```shell
+cd land-local
+./start.sh
+```  
+Then access https://static.circlesubi.localhost/ in your browser.
+
+_The first start will take a long time so get yourself a coffee or tea._
 
 ### Stop the stack
 Run `./stop.sh` to stop the stack. If you want to remove the CA, run `./remove-ca.sh`.  
@@ -95,6 +102,9 @@ Run `./stop.sh` to stop the stack. If you want to remove the CA, run `./remove-c
 * To show the full docker-compose logs, run `./logs.sh`.
 
 ### Access the UI
+#### Dashboard
+Use Firefox or Chrome and visit https://static.circlesubi.localhost/.
+
 1. First visit https://api-server.circlesubi.localhost and accept the self-signed certificate
 2. To login, visit https://o-platform.circlesubi.localhost/#/passport/actions/login/0 and accept the self-signed certificate
 3. Set a PIN

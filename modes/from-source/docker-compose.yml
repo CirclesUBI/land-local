@@ -341,8 +341,7 @@ services:
       dockerfile: ${PWD}/../../modules/caddy-src/Dockerfile
       context: ${PWD}/../../modules/caddy-src
     depends_on:
-      - api-server
-      - frontend
+      - static-content
     restart: unless-stopped
     ports:
       - "80:80"
