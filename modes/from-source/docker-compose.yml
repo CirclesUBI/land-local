@@ -379,12 +379,11 @@ services:
 
   cypress-tests:
     build: 
-      dockerfile: ${PWD}/../../modules/cypress-tests/Dockerfile
-      context: ${PWD}/../../modules/cypress-tests/
+      dockerfile: ${PWD}/../../modules/cypress-tests-src/Dockerfile
+      context: ${PWD}/../../modules/cypress-tests-src/
     network_mode: "host"
     volumes:
-      - ${PWD}/.state/cypress-tests/screenshots:/o-platform-cypress/cypress/screenshots/
-      - ${PWD}/.state/cypress-tests/videos:/o-platform-cypress/cypress/videos/
+      - ${PWD}/../../../o-platform-cypress/:/o-platform-cypress/
       - ${PWD}/.state/static-content/public:/o-platform-cypress/cypress/fixtures/
     depends_on:
       frontend:
