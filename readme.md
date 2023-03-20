@@ -7,20 +7,21 @@ It uses unsecure default addresses, keys and passwords.
 
 It starts the following services/containers:
 
-| Repo                                                                     | Service               | Description                                                                               |
-|--------------------------------------------------------------------------|-----------------------|-------------------------------------------------------------------------------------------|
-| [caddy](https://hub.docker.com/_/caddy)                                  | frontend-proxy        | A tls-terminating reverse proxy for the 'frontend' and the 'api-server'                   |
-| [o-platform](https://github.com/CirclesUBI/o-platform)                   | frontend              | The svelte based frontend application of circles.land                                     |
-| [api-server](https://github.com/CirclesUBI/api-server)                   | api-server            | Provides access to all services trough a GraphQL api                                      |
-| [blockchain-indexer](https://github.com/CirclesUBI/blockchain-indexer)   | blockchain-indexer    | Indexes circles related on-chain events and writes them to a postgres db                  |
-| [pathfinder2](https://github.com/CirclesUBI/pathfinder2)                 | pathfinder2           | Finds transitive payment paths between untrusted users                                    | 
-| [pathfinder2-updater](https://github.com/CirclesUBI/pathfinder2-updater) | pathfinder2-updater   | Updates the 'pathfinder2' with data from the 'blockchain-indexer'                         | 
-| [pathfinder-proxy](https://github.com/CirclesUBI/pathfinder-proxy)       | pathfinder-proxy      | Maintains statistics, load balances and filters requests to the 'pathfinder2'             |
-| [land-local](https://github.com/CirclesUBI/land-local)                   | api-db-init           | Executes the database migrations before each start of the api-server                      |
-| [land-local](https://github.com/CirclesUBI/land-local)                   | indexer-db-init       | Executes the database migrations before each start of the blockchain-indexer              |
+| Repo                                                                     | Service               | Description                                                                              |
+|--------------------------------------------------------------------------|-----------------------|------------------------------------------------------------------------------------------|
+| [caddy](https://hub.docker.com/_/caddy)                                  | frontend-proxy        | A tls-terminating reverse proxy for the 'frontend' and the 'api-server'                  |
+| [o-platform](https://github.com/CirclesUBI/o-platform)                   | frontend              | The svelte based frontend application of circles.land                                    |
+| [api-server](https://github.com/CirclesUBI/api-server)                   | api-server            | Provides access to all services trough a GraphQL api                                     |
+| [blockchain-indexer](https://github.com/CirclesUBI/blockchain-indexer)   | blockchain-indexer    | Indexes circles related on-chain events and writes them to a postgres db                 |
+| [pathfinder2](https://github.com/CirclesUBI/pathfinder2)                 | pathfinder2           | Finds transitive payment paths between untrusted users                                   | 
+| [pathfinder2-updater](https://github.com/CirclesUBI/pathfinder2-updater) | pathfinder2-updater   | Updates the 'pathfinder2' with data from the 'blockchain-indexer'                        | 
+| [pathfinder-proxy](https://github.com/CirclesUBI/pathfinder-proxy)       | pathfinder-proxy      | Maintains statistics, load balances and filters requests to the 'pathfinder2'            |
+| [land-local](https://github.com/CirclesUBI/land-local)                   | api-db-init           | Executes the database migrations before each start of the api-server                     |
+| [land-local](https://github.com/CirclesUBI/land-local)                   | indexer-db-init       | Executes the database migrations before each start of the blockchain-indexer             |
 | [land-local](https://github.com/CirclesUBI/land-local)                   | ganache-init          | Executes the truffle migrations before each start of the api-server or blockchain-indexer |
-| [land-local](https://github.com/CirclesUBI/land-local)                   | other-blockchain-user | Simulates usage from other users on the 'ganache' chain                                   |
-| [minio](https://hub.docker.com/r/minio/minio)                            | minio                 | Provides a S3-compatible object storage                                                   |
+| [land-local](https://github.com/CirclesUBI/land-local)                   | other-blockchain-user | Simulates usage from other users on the 'ganache' chain                                  |
+| [minio](https://hub.docker.com/r/minio/minio)                            | minio                 | Provides a S3-compatible object storage                                                  |
+| [o-platform-cypress](https://github.com/CirclesUBI/o-platform-cypress)   | cypress-tests         | End to end tests                                                                         |
 
 Here is a graph of the startup dependencies of the services as found in the docker-compose files:  
 
@@ -46,81 +47,73 @@ in the /modes/from-source/docker-compose.yml file.
 
 ___Note:___ This mode assumes you cloned the repos into the following FS-hierarchy:  
 * ../
-  * land-local/
   * o-platform/
   * api-server/
+  * blockchain-indexer/
+  * pathfinder2/
+  * pathfinder2-updater/
+  * pathfinder-proxy/
+  * o-platform-cypress/
+  
+_You can run `./clone-repos.sh` to clone all repos into the parent directory._
 
 ## Usage
-### Run the stack
-1. Choose which mode you want to use and `cd` into the corresponding directory (modes/from-image or modes/from-source)
-2. Run `docker compose up -d`
-3. Run `watch docker compose ps` and wait until all services become available (aren't restarting)  
-   ___Note:___ All '*-init' containers will exit and remain in that state once they finished their work. This is normal.
-4. First visit https://api-server.localhost and accept the self-signed certificate
-5. Then visit https://o-platform.localhost and accept the self-signed certificate to access the UI
+### Preparation
+#### Install dependencies
+_Ubuntu_:  
+1) Install [docker](https://docs.docker.com/engine/install/ubuntu/) and [docker compose](https://docs.docker.com/compose/install/linux/).
+2) Install git and mkcert: ```sudo apt install git libnss3-tools mkcert```  
 
-#### Known issues
-Especially on the first start in 'from-source'-mode it happens that the api-server hangs.
-The corresponding log output is `[nodemon] app crashed - waiting for file changes before starting.`.  
-To retry, either restart the container or change a file within the api-server's src-directory.
+_MacOS_:
+1) Install Docker Desktop for Mac: https://docs.docker.com/docker-for-mac/install/
+1) Install the xcode command line tools (open the Terminal and type 'git' + Enter)
+2) Install [homebrew](https://brew.sh/) and follow the instructions to add it to your $PATH.
+3) Install mkcert with homebrew: ```brew install nss mkcert```
 
-#### Invitation code
-In the process of creating an account you will be asked for an invitation. 
-Present the following QR code to your webcam to proceed with the account setup.  
+#### Clone repository
+The 'land-local' repository should be cloned into the following FS-hierarchy:
+* CirclesUBI/
+  * land-local/
 
-![invitation code](docs/local_invitation.png)
-
-
-### Stop the stack
-1. `cd` to the mode directory (from-image or from-source) from which you started the stack
-2. Run `docker compose stop`
-
-### Runtime state
-All volumes are mounted in the `.state` directory of each mode. This means that the state of the setup
-will be persisted between runs. If you want to start from scratch, run the following commands.
 ```shell
-# Remove all containers, clean all runtime state and rebuild all containers that contain state
-docker compose down \
- && sudo rm -r -f .state \
- && docker compose build --no-cache \
-      api-db-init \
-      indexer-db-init \
-      other-blockchain-user \
-      ganache \
-      ganache-init \
-      frontend
-      
-# Restart the stack
-docker compose up -d
+mkdir CirclesUBI
+cd CirclesUBI
+git clone https://github.com/CirclesUBI/land-local.git
 ```
 
-### How to Override api-server and frontend for local debugging
-1. run the docker as described above
-2. stop the api-server and frontend container
-3. make sure you have the launch.json (for Visual Studio Code) from secrets.circlesubi.id and it contains the correct API Keys
-4. start the api inside your Visual Studio
-5. in o-platform make sure you have the .env.override file from secrets.circlesubi.id
-6. go to o-platform/shell and type: yarn override to start the frontend.
+### Run the stack
+```shell
+cd land-local
+./start.sh
+```  
+Then access https://static.circlesubi.localhost/ in your browser.
 
-### Troubleshooting
-#### UI doesn't load
-1. Check the 'frontend' logs to see if it is running properly
-2. Check the 'api-server' logs to see if it is running properly
-3. Check if the '*-init' containers all completed successfully
+_The first start will take a long time so get yourself a coffee or tea._
 
-#### View logs
-1. Run `docker compose ps -a` to list all the containers in this stack and look for the 
-   `CONTAINER ID` of the service you want to see the logs from.
-2. Run `docker logs [CONTAINER ID] -f -n 1000`
+### Stop the stack
+Run `./stop.sh` to stop the stack. If you want to remove the CA, run `./remove-ca.sh`.  
 
-#### Restart a single container
-It may happen that a single container shows some misbehavior during development. 
-To avoid having to restart the entire stack when a component malfunctions, you can restart 
-a single container:
-1. Run `docker compose ps -a` to list all the containers in this stack and look for the
-   `CONTAINER ID` of the service you want to restart.
-2. Run `docker restart [CONTAINER ID]`
+### Other commands
+#### Lifecycle
+* To kill all containers, remove the certificates and rebuild the stack, run `./reset.sh`.  
+* To kill, rebuild and restart a single container, run `./rebuild.sh <container-name>`.
+#### Logs
+* To show the logs of a single container, run `./logs.sh <container-name>`.
+* To show the full docker-compose logs, run `./logs.sh`.
 
-#### Containers don't stop
-You can kill non-responding containers with the following command:  
-`docker compose kill [SERVICE NAME]`
+### Access the UI
+#### Dashboard
+Use Firefox or Chrome and visit https://static.circlesubi.localhost/.
+
+1. First visit https://api-server.circlesubi.localhost and accept the self-signed certificate
+2. To login, visit https://o-platform.circlesubi.localhost/#/passport/actions/login/0 and accept the self-signed certificate
+3. Set a PIN
+4. Complete the survey
+5. Scan the invite code from http://localhost:1234/Person_1.png and click "Next"
+6. Click "Sign-up now"
+7. Click "Sign-up now" again
+8. When asked if you want to import or create a new account, click "Import existing"
+9. Copy the keyphrase from http://localhost:1234/key_phrase.txt into the textbox and click "Connect recovery code"
+10. Select one of the safes which name starts with "Person_" and click "Connect"
+11. Next, click "Proceed"
+12. Finished. You should now see the dashboard at https://o-platform.circlesubi.localhost/#/home

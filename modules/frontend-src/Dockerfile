@@ -43,5 +43,5 @@ RUN apt update
 RUN apt install -y inotify-tools
 
 WORKDIR /o-platform
-
+RUN rm -f shell/public/bundle.js
 CMD ./build_libs.sh && cd shell && npm run docker

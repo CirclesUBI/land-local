@@ -1,0 +1,234 @@
+{
+  "apps": {
+    "http": {
+      "servers": {
+        "srv0": {
+          "listen": [
+            ":443"
+          ],
+          "routes": [
+            {
+              "match": [
+                {
+                  "host": [
+                    "*.circlesubi.localhost"
+                  ]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "subroute",
+                  "routes": [
+                    {
+                      "group": "group5",
+                      "handle": [
+                        {
+                          "handler": "subroute",
+                          "routes": [
+                            {
+                              "handle": [
+                                {
+                                  "handler": "reverse_proxy",
+                                  "upstreams": [
+                                    {
+                                      "dial": "api-server:8989"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "match": [
+                                {
+                                  "path": [
+                                    "/graphql"
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "handle": [
+                                {
+                                  "handler": "reverse_proxy",
+                                  "upstreams": [
+                                    {
+                                      "dial": "api-server:8989"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "match": [
+                        {
+                          "host": [
+                            "api-server.circlesubi.localhost"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "group": "group5",
+                      "handle": [
+                        {
+                          "handler": "subroute",
+                          "routes": [
+                            {
+                              "handle": [
+                                {
+                                  "handler": "reverse_proxy",
+                                  "upstreams": [
+                                    {
+                                      "dial": "frontend:8080"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "match": [
+                                {
+                                  "path": [
+                                    "/ws"
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "handle": [
+                                {
+                                  "handler": "reverse_proxy",
+                                  "upstreams": [
+                                    {
+                                      "dial": "frontend:8080"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "match": [
+                        {
+                          "host": [
+                            "o-platform.circlesubi.localhost"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "group": "group5",
+                      "handle": [
+                        {
+                          "handler": "subroute",
+                          "routes": [
+                            {
+                              "handle": [
+                                {
+                                  "handler": "reverse_proxy",
+                                  "upstreams": [
+                                    {
+                                      "dial": "container-monitor:3000"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "match": [
+                        {
+                          "host": [
+                            "container-monitor.circlesubi.localhost"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "group": "group5",
+                      "handle": [
+                        {
+                          "handler": "subroute",
+                          "routes": [
+                            {
+                              "handle": [
+                                {
+                                  "handler": "reverse_proxy",
+                                  "upstreams": [
+                                    {
+                                      "dial": "static-content:80"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "match": [
+                        {
+                          "host": [
+                            "static.circlesubi.localhost"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "group": "group5",
+                      "handle": [
+                        {
+                          "handler": "subroute",
+                          "routes": [
+                            {
+                              "handle": [
+                                {
+                                  "abort": true,
+                                  "handler": "static_response"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "terminal": true
+            }
+          ]
+        }
+      }
+    },
+    "pki": {
+      "certificate_authorities": {
+        "local": {
+          "install_trust": false,
+          "name": "localhost",
+          "root_common_name": "localhost",
+          "root": {
+            "certificate": "/etc/caddy/ca-certs/ca.crt",
+            "private_key": "/etc/caddy/ca-certs/ca.key"
+          }
+        }
+      }
+    },
+    "tls": {
+      "automation": {
+        "policies": [
+          {
+            "subjects": [
+              "*.circlesubi.localhost"
+            ],
+            "issuers": [
+              {
+                "module": "internal",
+                "sign_with_root": true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}

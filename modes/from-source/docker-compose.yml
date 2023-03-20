@@ -23,8 +23,14 @@ services:
     build:
       dockerfile: ${PWD}/../../modules/indexer-db-init/Dockerfile
       context: ${PWD}/../../modules/indexer-db-init
+    healthcheck:
+      test: [ "CMD", "test", "-f", "/app/.ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 12
     depends_on:
-      - indexer-db
+      indexer-db:
+        condition: service_healthy
     networks:
       - internal
     environment:
@@ -35,7 +41,9 @@ services:
       POSTGRES_PASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
 
   api-db:
-    image: postgis/postgis:15-3.3
+    build:
+      dockerfile: ${PWD}/../../modules/api-db-src/Dockerfile
+      context: ${PWD}/../../modules/api-db-src
     restart: unless-stopped
     ports:
       - 5432:5432
@@ -57,8 +65,16 @@ services:
     build:
       dockerfile: ${PWD}/../../modules/api-db-init/Dockerfile
       context: ${PWD}/../../modules/api-db-init
+    healthcheck:
+      test: [ "CMD", "test", "-f", "/app/.ready" ]
+      interval: 30s
+      timeout: 10s
+      retries: 12
     depends_on:
-      - api-db
+      api-db:
+        condition: service_healthy
+      ganache-init:
+        condition: service_healthy
     networks:
       - internal
     environment:
@@ -74,6 +90,10 @@ services:
       INITIAL_USER_NAME: ${API_DATA_INITIAL_USER_NAME}
       INITIAL_USER_EMAIL: ${API_DATA_INITIAL_USER_EMAIL}
       APP_URL: ${FRONTEND_APP_URL}
+    volumes:
+      - ${PWD}/.state/ganache-init/status/:/app/status/       # Required to access the addresses of the deployed contracts
+      - ${PWD}/.state/static-content/public:/public           # Required to provide the generated invitation QR codes to the user
+      - ${PWD}/../../../api-server:/app/api-server
 
   api-server:
     build:
@@ -81,11 +101,16 @@ services:
       context: ${PWD}/../../modules/api-server-src
     restart: unless-stopped
     depends_on:
-      - api-db-init
-      - ganache-init
-      - blockchain-indexer
-      - pathfinder-proxy
-      - minio-init
+      api-db-init:
+        condition: service_healthy
+      ganache-init:
+        condition: service_healthy
+      blockchain-indexer:
+        condition: service_started
+      pathfinder-proxy:
+        condition: service_started
+      minio-init:
+        condition: service_started
     networks:
       - internal
     environment:
@@ -120,14 +145,19 @@ services:
       S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX: ${API_SERVER_S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX}
     volumes:
       - ${PWD}/../../../api-server:/api-server
+      - ${PWD}/.state/ganache-init/status/:/app/status/
 
   blockchain-indexer:
-    image: circlesubi/blockchain-indexer:dev
+    build:
+      dockerfile: ${PWD}/../../modules/blockchain-indexer-src/Dockerfile
+      context: ${PWD}/../../../blockchain-indexer
     expose:
       - 8675
     depends_on:
-      - ganache-init
-      - indexer-db-init
+      ganache-init:
+        condition: service_healthy
+      indexer-db-init:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - internal
@@ -138,6 +168,9 @@ services:
       INDEXER_RPC_GATEWAY_URL: ${INTERNAL_CHAIN_RPC_URL}
       HUB_ADDRESS: ${CONTRACT_ADDRESS_CIRCLES_HUB}
       INDEXER_CONNECTION_STRING: ${BLOCKCHAIN_INDEXER_CONNECTION_STRING}
+      START_FROM_BLOCK: ${BLOCKCHAIN_INDEXER_START_FROM_BLOCK}
+    volumes:
+      - ${PWD}/.state/ganache-init/status/:/app/status/
 
   ganache:
     build:
@@ -150,16 +183,25 @@ services:
     ports:
       - 8545:8545
     volumes:
+      #- ${PWD}/.state/ganache:/usr/src/app/node_modules/hardhat/internal/core/node/data
       - ${PWD}/.state/ganache:/var/ganache-db
 
   ganache-init:
     depends_on:
       - ganache
+    healthcheck:
+      test:  [ "CMD", "test", "-f", "/app/status/addresses.json" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
     build:
       dockerfile: ${PWD}/../../modules/ganache-init/Dockerfile
       context: ${PWD}/../../modules/ganache-init
     networks:
       - internal
+    volumes:
+      - ${PWD}/.state/ganache-init/status/:/app/status/
 
   other-blockchain-user:
     restart: unless-stopped
@@ -167,7 +209,8 @@ services:
       dockerfile: ${PWD}/../../modules/other_chain_user/Dockerfile
       context: ${PWD}/../../modules/other_chain_user
     depends_on:
-      - ganache
+      ganache-init:
+        condition: service_healthy
     networks:
       - internal
     environment:
@@ -179,7 +222,9 @@ services:
     depends_on:
       - pathfinder2
       - blockchain-indexer
-    image: circlesubi/pathfinder2-updater:dev
+    build:
+      dockerfile: ${PWD}/../../modules/pathfinder2-updater-src/Dockerfile
+      context: ${PWD}/../../../pathfinder2-updater
     restart: unless-stopped
     networks:
       - internal
@@ -193,7 +238,9 @@ services:
       - ${PWD}/.state/pathfinder:/var/pathfinder2/data
 
   pathfinder2:
-    image: circlesubi/pathfinder2:eeee335
+    build:
+      dockerfile: ${PWD}/../../modules/pathfinder2-src/Dockerfile
+      context: ${PWD}/../../../pathfinder2
     restart: unless-stopped
     networks:
       - internal
@@ -205,8 +252,10 @@ services:
       - ${PWD}/.state/pathfinder:/var/pathfinder2/data
 
   pathfinder-proxy:
-    image: circlesubi/pathfinder-proxy:dev
     restart: unless-stopped
+    build:
+      dockerfile: ${PWD}/../../modules/pathfinder-proxy-src/Dockerfile
+      context: ${PWD}/../../modules/pathfinder-proxy-src
     depends_on:
       - pathfinder2-updater
       - pathfinder2
@@ -219,6 +268,8 @@ services:
       CORS_ORIGINS: ${PATHFINDER_PROXY_CORS_ORIGINS}
       UPSTREAM_SERVICE_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_SERVICE_ENDPOINTS}
       UPSTREAM_HEALTH_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_HEALTH_ENDPOINTS}
+    volumes:
+      - ${PWD}/../../../pathfinder-proxy:/pathfinder-proxy
 
   frontend:
     depends_on:
@@ -242,6 +293,13 @@ services:
       - internal
     volumes:
       - ${PWD}/../../../o-platform:/o-platform
+    healthcheck:
+      test: |
+        curl -s --head http://localhost:8080/bundle.js | head -n 1 | grep "HTTP.*200.*" && echo "File exists and was downloaded successfully" || { echo "File does not exist or could not be downloaded"; exit 1; }
+      interval: 10s
+      timeout: 10m
+      retries: 500
+      start_period: 30s
 
   minio:
     image: minio/minio
@@ -251,7 +309,7 @@ services:
       - 9000:9000
       - 9090:9090
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://localhost:8675/"]
+      test: [ "CMD-SHELL", "curl --fail http://localhost:9090"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -279,11 +337,12 @@ services:
       "
 
   caddy:
-    image: caddy:latest
-    restart: unless-stopped
+    build:
+      dockerfile: ${PWD}/../../modules/caddy-src/Dockerfile
+      context: ${PWD}/../../modules/caddy-src
     depends_on:
-      - frontend
-      - api-server
+      - static-content
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -293,7 +352,46 @@ services:
     volumes:
       - ${PWD}/../../modules/caddy-src:/etc/caddy/
       - ${PWD}/.state/caddy/data:/data
-      - ${PWD}/.state/caddy/config:/config
+      - ${PWD}/../../modules/caddy-src/ca-certs:/etc/caddy/ca-certs
+
+  static-content:
+    image: caddy:latest
+    restart: unless-stopped
+    depends_on:
+      - api-db-init
+    networks:
+      - internal
+    volumes:
+      - ${PWD}/../../modules/static-content/Caddyfile:/etc/caddy/Caddyfile
+      - ${PWD}/.state/static-content/public:/var/www
+      - ${PWD}/../../modules/static-content/index.html:/var/www/index.html
+      - ${PWD}/.state/ganache-init/status/addresses.json:/var/www/addresses.json
+
+  container-monitor:
+    build:
+        dockerfile: ${PWD}/../../modules/container-monitor/Dockerfile
+        context: ${PWD}/../../modules/container-monitor
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - internal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  cypress-tests:
+    build: 
+      dockerfile: ${PWD}/../../modules/cypress-tests-src/Dockerfile
+      context: ${PWD}/../../modules/cypress-tests-src/
+    network_mode: "host"
+    volumes:
+      - ${PWD}/../../../o-platform-cypress/:/o-platform-cypress/
+      - ${PWD}/.state/static-content/public:/o-platform-cypress/cypress/fixtures/
+    depends_on:
+      caddy:
+        condition: service_started
+      frontend:
+        condition: service_healthy
 
 networks:
   internal:

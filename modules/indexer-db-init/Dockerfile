@@ -1,5 +1,6 @@
 FROM ubuntu:latest
 
+WORKDIR /app
 COPY ./seed.sh seed.sh
 
 RUN apt update
