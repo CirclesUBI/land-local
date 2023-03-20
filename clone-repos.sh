@@ -17,7 +17,7 @@ fi
 # same with blockchain-indexer
 if [ ! -d "blockchain-indexer" ]; then
   git clone https://github.com/CirclesUBI/blockchain-indexer.git
-  (cd blockchain-indexer && git branch --show-current && git checkout aarch64-compatible)
+  (cd blockchain-indexer && git branch --show-current && git checkout dev)
 fi
 
 # same with pathfinder2
