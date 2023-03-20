@@ -13,10 +13,10 @@ DECLARE
     profile_id integer;
     app_url text = 'https://o-platform.circlesubi.localhost/#/dashboard';
 BEGIN
-    payload = '{"id": "Invitation link for '||safe_address||'", "_kind": "perpetualTrigger", "_topic": "inviteCodeFromExternalTrigger", "_identity": "Invitation link for '||safe_address||'", "redirectUrl": "'||app_url||'", "inviterSafeAddress": "'|| safe_address ||'"}';
+    payload = '{"id": "Invitation link for '||lower(safe_address)||'", "_kind": "perpetualTrigger", "_topic": "inviteCodeFromExternalTrigger", "_identity": "Invitation link for '||safe_address||'", "redirectUrl": "'||app_url||'", "inviterSafeAddress": "'|| safe_address ||'"}';
     payload_hash = encode(digest((payload::text||E'\n')::bytea, 'sha1'), 'hex');
 
-    if exists(select 1 from "Profile" p where p."circlesAddress" = add_seed_user.safe_address) then
+    if exists(select 1 from "Profile" p where p."circlesAddress" = lower(add_seed_user.safe_address)) then
         return -1;
     end if;
 
@@ -57,8 +57,8 @@ BEGIN
         "askedForEmailAddress",
         "inviteTriggerId")
     VALUES (   '',
-               safe_address,
-               safe_owner_address,
+               lower(safe_address),
+               lower(safe_owner_address),
                user_name,
                true,
                now(),
@@ -75,10 +75,10 @@ BEGIN
            ) RETURNING id INTO profile_id;
 
     INSERT INTO public."Invitation" ("createdByProfileId", "createdAt", code, "claimedByProfileId", "claimedAt", "redeemedByProfileId", "redeemedAt", key, address, name, "redeemTxHash", "fundedAt", "forSafeAddress")
-    VALUES (1, now(), '', profile_id, now(), profile_id, now(), '0x00', '0x00', 'Root invitation', '0x00', now(), safe_address);
+    VALUES (1, now(), '', profile_id, now(), profile_id, now(), '0x00', '0x00', 'Root invitation', '0x00', now(), lower(safe_address));
 
     INSERT INTO public."VerifiedSafe" ("safeAddress", "createdAt", "createdByProfileId", "createdByOrganisationId", "swapEoaAddress", "swapEoaKey", "inviteCount")
-    VALUES (safe_address, now(), 1, 2, '0x00', '0x00', 1);
+    VALUES (lower(safe_address), now(), 1, 2, '0x00', '0x00', 1);
 
     RETURN profile_id;
 END
