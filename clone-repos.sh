@@ -23,7 +23,7 @@ fi
 # same with pathfinder2
 if [ ! -d "pathfinder2" ]; then
   git clone https://github.com/CirclesUBI/pathfinder2.git
-  (cd pathfinder2 && git branch --show-current && git checkout master)
+  (cd pathfinder2 && git branch --show-current && git checkout main)
 fi
 
 # same with pathfinder2-updater
