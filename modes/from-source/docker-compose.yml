@@ -60,6 +60,7 @@ services:
       POSTGRES_DB: ${API_DB_POSTGRES_DB}
     volumes:
       - ${PWD}/.state/api-db/pg_data:/var/lib/postgresql/data
+      - ${PWD}/../../modules/api-db-src/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
 
   api-db-init:
     build:
