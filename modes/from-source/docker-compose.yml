@@ -1,5 +1,4 @@
 services:
-
   indexer-db:
     image: postgres:15
     restart: unless-stopped
@@ -8,7 +7,7 @@ services:
     networks:
       - internal
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 100
@@ -24,7 +23,7 @@ services:
       dockerfile: ${PWD}/../../modules/indexer-db-init/Dockerfile
       context: ${PWD}/../../modules/indexer-db-init
     healthcheck:
-      test: [ "CMD", "test", "-f", "/app/.ready" ]
+      test: ["CMD", "test", "-f", "/app/.ready"]
       interval: 30s
       timeout: 10s
       retries: 12
@@ -50,7 +49,7 @@ services:
     networks:
       - internal
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres" ]
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 100
@@ -67,7 +66,7 @@ services:
       dockerfile: ${PWD}/../../modules/api-db-init/Dockerfile
       context: ${PWD}/../../modules/api-db-init
     healthcheck:
-      test: [ "CMD", "test", "-f", "/app/.ready" ]
+      test: ["CMD", "test", "-f", "/app/.ready"]
       interval: 30s
       timeout: 10s
       retries: 12
@@ -92,8 +91,8 @@ services:
       INITIAL_USER_EMAIL: ${API_DATA_INITIAL_USER_EMAIL}
       APP_URL: ${FRONTEND_APP_URL}
     volumes:
-      - ${PWD}/.state/ganache-init/status/:/app/status/       # Required to access the addresses of the deployed contracts
-      - ${PWD}/.state/static-content/public:/public           # Required to provide the generated invitation QR codes to the user
+      - ${PWD}/.state/ganache-init/status/:/app/status/ # Required to access the addresses of the deployed contracts
+      - ${PWD}/.state/static-content/public:/public # Required to provide the generated invitation QR codes to the user
       - ${PWD}/../../../api-server:/app/api-server
 
   api-server:
@@ -191,7 +190,7 @@ services:
     depends_on:
       - ganache
     healthcheck:
-      test:  [ "CMD", "test", "-f", "/app/status/addresses.json" ]
+      test: ["CMD", "test", "-f", "/app/status/addresses.json"]
       interval: 10s
       timeout: 5s
       retries: 20
@@ -290,6 +289,7 @@ services:
         OPENLOGIN_CLIENT_ID: ${FRONTEND_OPENLOGIN_CLIENT_ID}
         HERE_API_KEY: ${FRONTEND_HERE_API_KEY}
         PLACES_API_KEY: ${FRONTEND_PLACES_API_KEY}
+        I18N_FILE_URL_TEMPLATE: ${FONTEND_I18N_FILE_URL_TEMPLATE}
     networks:
       - internal
     volumes:
@@ -310,7 +310,7 @@ services:
       - 9000:9000
       - 9090:9090
     healthcheck:
-      test: [ "CMD-SHELL", "curl --fail http://localhost:9090"]
+      test: ["CMD-SHELL", "curl --fail http://localhost:9090"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -370,8 +370,8 @@ services:
 
   container-monitor:
     build:
-        dockerfile: ${PWD}/../../modules/container-monitor/Dockerfile
-        context: ${PWD}/../../modules/container-monitor
+      dockerfile: ${PWD}/../../modules/container-monitor/Dockerfile
+      context: ${PWD}/../../modules/container-monitor
     restart: unless-stopped
     ports:
       - "3000:3000"
@@ -381,7 +381,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
   cypress-tests:
-    build: 
+    build:
       dockerfile: ${PWD}/../../modules/cypress-tests-src/Dockerfile
       context: ${PWD}/../../modules/cypress-tests-src/
     network_mode: "host"
