@@ -101,6 +101,14 @@ Run `./stop.sh` to stop the stack. If you want to remove the CA, run `./remove-c
 * To show the logs of a single container, run `./logs.sh <container-name>`.
 * To show the full docker-compose logs, run `./logs.sh`.
 
+### How to Override api-server and frontend for local debugging
+1. run the docker as described above
+2. stop the api-server and frontend container
+3. make sure you have the launch.json (for Visual Studio Code) from secrets.circlesubi.id and it contains the correct API Keys
+4. start the api inside your Visual Studio
+5. in o-platform make sure you have the .env.override file from secrets.circlesubi.id
+6. go to o-platform/shell and type: yarn override to start the frontend.
+
 ### Access the UI
 #### Dashboard
 Use Firefox or Chrome and visit https://static.circlesubi.localhost/.
