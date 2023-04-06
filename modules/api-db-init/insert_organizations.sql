@@ -21,7 +21,7 @@ BEGIN
                                   "businessCategoryId", "businessHoursFriday", "businessHoursMonday", "businessHoursSaturday",
                                   "businessHoursSunday", "businessHoursThursday", "businessHoursTuesday", "businessHoursWednesday",
                                   "phoneNumber", lat, lon, "locationName", "canInvite", "surveyDataSessionId")
-    VALUES ('', lower(safe_address), lower(safe_owner_address), user_name, null, 'https://pixabay.com/photos/autos-technology-vw-214033/', null, null, null, now(), now(), true, 'ORGANISATION', 0, 0,
+    VALUES ('', lower(safe_address), lower(safe_owner_address), user_name, null, 'https://picsum.photos/200?random='||lower(safe_owner_address), null, null, null, now(), now(), true, 'ORGANISATION', 0, 0,
             'EURS', 'I-', null, null, now(), null, true, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null, null, null, null, null, false, null) RETURNING id INTO profile_id;
 
