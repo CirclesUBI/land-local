@@ -2,6 +2,7 @@ const truffleContract = require('@truffle/contract');
 const truffleConfig = require('../truffle-config');
 const fs = require('fs');
 const util = require('util');
+const Web3 = require("web3");
 
 const safeProxyFactoryArtifacts = require('../build/contracts/GnosisSafeProxyFactory.json');
 const safeArtifacts = require('../build/contracts/GnosisSafe.json');
@@ -11,6 +12,7 @@ const compatibilityFallbackHandler = require('../build/contracts/CompatibilityFa
 const multiSendCallOnly = require('../build/contracts/MultiSendCallOnly.json');
 const {addressCollection} = require("../lib/addressCollection");
 const {defaultOwnerAccount} = require("../lib/defaultOwnerAccount");
+const {sendFunds} = require("../lib/sendFunds");
 
 const GnosisSafe = truffleContract(safeArtifacts);
 GnosisSafe.setProvider(web3.currentProvider);
@@ -73,6 +75,18 @@ module.exports = async function (deployer, network, accounts) {
         address: defaultOwnerAccount.address,
         privateKey: defaultOwnerAccount.privateKey,
     };
+
+    addressCollection.rootSafeContract =  (await deployer.deploy(GnosisSafe, {from: accounts[0]})
+        .then(result => result.address?.toLowerCase()));
+
+    addressCollection.operatorOrgaSafeContract =  (await deployer.deploy(GnosisSafe, {from: accounts[0]})
+        .then(result => result.address?.toLowerCase()));
+
+    addressCollection.invitationFundsSafeContract =  (await deployer.deploy(GnosisSafe, {from: accounts[0]})
+        .then(result => result.address?.toLowerCase()));
+
+    console.log("Sending 100 Eth invitation funds to:", addressCollection.invitationFundsSafeContract);
+    await sendFunds(new Web3.utils.BN("10000000000000000000"), addressCollection.invitationFundsSafeContract);
 
     const writeFile = util.promisify(fs.writeFile);
     await writeFile('/app/status/addresses.temp.json', JSON.stringify({...addressCollection, network: truffleConfig.networks[network]}, null, 2));

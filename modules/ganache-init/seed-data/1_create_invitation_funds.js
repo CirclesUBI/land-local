@@ -5,6 +5,7 @@ const {orgaHubSignup} = require("../truffle/lib/orgaHubSignup");
 const {defaultOwnerAccount} = require("../truffle/lib/defaultOwnerAccount");
 
 module.exports = async function (addresses) {
+/*
     const safeFactory = await getSafeFactory(addresses);
 
     const profileSafe = await safeFactory.deploySafe({
@@ -35,4 +36,6 @@ module.exports = async function (addresses) {
 
     console.log("Sending 100 Eth invitation funds to:", invitationFundsSafe.getAddress());
     await sendFunds(new Web3.utils.BN("10000000000000000000"), invitationFundsSafe.getAddress());
+
+ */
 }
