@@ -85,6 +85,46 @@ module.exports = async function (deployer, network, accounts) {
     addressCollection.invitationFundsSafeContract =  (await deployer.deploy(GnosisSafe, {from: accounts[0]})
         .then(result => result.address?.toLowerCase()));
 
+    const invitationFundsSafeInstance = await GnosisSafe.at(addressCollection.invitationFundsSafeContract);
+    const setupData = {
+        owners: [defaultOwnerAccount.address] // Replace with an array of owner addresses
+        ,threshold: 1 // Replace with the number of required confirmations
+        ,to: "0x0000000000000000000000000000000000000000"  // Replace with the address of the recipient
+        ,data: "0x" // Replace with the transaction data
+        ,fallbackHandler: "0x" // Replace with the fallback handler address
+        ,payment: "0x00" // Replace with the payment amount
+        ,paymentReceiver: "0x0000000000000000000000000000000000000000" // Replace with the payment receiver address
+    }
+
+    const encodedFunctionCall = invitationFundsSafeInstance.contract.methods.setup(
+        setupData.owners,
+        setupData.threshold,
+        setupData.to,
+        setupData.data,
+        '0x0000000000000000000000000000000000000000', // No payment token specified
+        '0x0000000000000000000000000000000000000000', // No payment token specified
+        setupData.payment,
+        setupData.paymentReceiver
+    ).encodeABI();
+
+    console.log("Encoded setup() function call:", encodedFunctionCall);
+
+    const transactionObject = {
+        from: defaultOwnerAccount.address,
+        to: addressCollection.invitationFundsSafeContract,
+        data: encodedFunctionCall,
+        gasLimit: 5000000, // Replace with the appropriate gas limit
+        gasPrice: Web3.utils.toWei('50', 'gwei') // Replace with the appropriate gas price
+    };
+
+    console.log("web3", web3);
+
+    const signedTransaction = await web3.eth.accounts.signTransaction(transactionObject, defaultOwnerAccount.privateKey);
+    console.log('Signed transaction:', signedTransaction.rawTransaction)
+
+    const transactionReceipt = await web3.eth.sendSignedTransaction(signedTransaction.rawTransaction);
+    console.log('Transaction hash:', transactionReceipt.transactionHash);
+
     console.log("Sending 100 Eth invitation funds to:", addressCollection.invitationFundsSafeContract);
     await sendFunds(new Web3.utils.BN("10000000000000000000"), addressCollection.invitationFundsSafeContract);
 
