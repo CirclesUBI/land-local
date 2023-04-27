@@ -1,2 +1,2 @@
 #!/bin/sh
-cd /pathfinder-proxy && (tsc --watch & (sleep 30 && cd dist && nodemon main.js))
+cd /pathfinder-proxy && npm i && (tsc --watch & (sleep 30 && cd dist && nodemon main.js))
