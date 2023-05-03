@@ -78,8 +78,6 @@ else
   rm -f ./initial_user.sql
   mv ./initial_user.tmp.sql ./initial_user.sql
 
-  echo "Executing initial_business_categories.sql"
-  psql ${CONNECTION_STRING_ROOT} < ./initial_business_categories.sql
   echo "Executing insert_persons.sql"
   psql ${CONNECTION_STRING_ROOT} < ./insert_persons.sql
   echo "Executing insert_organizations.sql"
