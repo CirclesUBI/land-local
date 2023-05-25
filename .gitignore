@@ -5,3 +5,7 @@ modules/caddy/ca-certs
 modules/caddy-src/ca-certs
 local.iml
 .history
+
+modules/caddy-src/ca-certs/
+modules/caddy/ca-certs/
+
