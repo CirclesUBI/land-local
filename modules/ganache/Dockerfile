@@ -8,7 +8,7 @@
 
 
 
-FROM node:alpine
+FROM node:lts-alpine
 
 WORKDIR /var/hardhat_node
 
