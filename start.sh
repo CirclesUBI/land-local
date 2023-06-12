@@ -18,6 +18,8 @@ build-container-images () {
     cd modes/from-source
     set -x
     docker compose build
+    set +x
+    cd ../..
     }
 
 pull-container-images () {
@@ -25,6 +27,8 @@ pull-container-images () {
     cd modes/from-source
     set -x
     docker compose pull
+    set +x
+    cd ../..
     }
 
 start-compose-project () {
@@ -32,6 +36,8 @@ start-compose-project () {
     cd modes/from-source
     set -x
     docker compose up -d
+    set +x
+    cd ../..
     }
 
 echo "Check and prepare prerequisites"
