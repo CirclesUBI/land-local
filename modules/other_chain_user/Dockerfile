@@ -1,8 +1,8 @@
-FROM node:latest
+FROM node:lts
 
 COPY . /app/
 WORKDIR /app
 
-RUN npm i
+RUN npm install
 
 ENTRYPOINT ["/usr/local/bin/node", "/app/main.js"]

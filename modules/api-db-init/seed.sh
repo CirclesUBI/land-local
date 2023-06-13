@@ -67,7 +67,7 @@ else
     git checkout dev
   fi
 
-  ls src/api-db-migrations/*.sql | xargs -I% sh -c 'psql ${CONNECTION_STRING_ROOT} << envsubst < %'
+  ls src/api-db-migrations/2*.sql | xargs -I% sh -c 'psql ${CONNECTION_STRING_ROOT} << envsubst < %'
 
   cd ..
 
