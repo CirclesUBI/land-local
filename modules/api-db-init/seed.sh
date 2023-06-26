@@ -97,6 +97,9 @@ else
     qrencode -s 10 -m 14 -o "/public/${name}.png" "https://api-server.circlesubi.localhost/trigger?hash=${hash}"
     echo "QR code saved to ${name}.png"
 
+    echo {\"invitelink\": \"https://api-server.circlesubi.localhost/trigger?hash=${hash}\" } > /public/inviteLink.json 
+    echo "Invite link stored in Json File"
+
     ffmpeg -loop 1 -i "/public/${name}.png" -pix_fmt yuv420p -crf 30 -t 1 "/public/${name}.y4m"
   done
 
