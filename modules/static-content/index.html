@@ -1,74 +1,79 @@
 <html lang="en">
-<head>
+  <head>
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-        }
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
 
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -15px;
-        }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+      }
 
-        .col-12 {
-            flex: 0 0 100%;
-            max-width: 100%;
-            padding: 0 15px;
-        }
+      .col-12 {
+        flex: 0 0 100%;
+        max-width: 100%;
+        padding: 0 15px;
+      }
 
-        .col-3 {
-            flex: 0 0 25%;
-            max-width: 25%;
-            padding: 0 15px;
-        }
+      .col-3 {
+        flex: 0 0 25%;
+        max-width: 25%;
+        padding: 0 15px;
+      }
 
-        pre {
-            background-color: #f5f5f5;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            color: #333;
-            font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
-            font-size: 13px;
-            line-height: 1.42857;
-            margin: 0;
-            overflow: auto;
-            padding: 9.5px;
-            word-break: break-all;
-            word-wrap: break-word;
-        }
+      pre {
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        color: #333;
+        font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+        font-size: 13px;
+        line-height: 1.42857;
+        margin: 0;
+        overflow: auto;
+        padding: 9.5px;
+        word-break: break-all;
+        word-wrap: break-word;
+      }
     </style>
     <script>
+      async function reloadPreview() {
+        const apiPreview = document.getElementById("api-preview");
+        apiPreview.src = apiPreview.src;
 
-        function reloadPreview() {
-            const apiPreview = document.getElementById('api-preview')
-            apiPreview.src = apiPreview.src
+        const frontendPreview = document.getElementById("frontend-preview");
+        frontendPreview.src = frontendPreview.src;
 
-            const frontendPreview = document.getElementById('frontend-preview')
-            frontendPreview.src = frontendPreview.src
+        const invitationLinkResponse = await fetch("/inviteLink.json");
+        const invitationLink = await invitationLinkResponse.json();
 
-            const invitation = document.getElementById('invitation');
-            invitation.innerHTML = `<img style="max-width: 300px;" src="https://static.circlesubi.localhost/Person_1.png?${Date.now()}" />`
-        }
+        const invitationLinkElement = document.getElementById("invitationLink");
+        invitationLinkElement.innerHTML = `<a href='${invitationLink.invitelink}'  target='_blank'>Open Invite Link</a>`;
 
-        async function loadAddresses() {
-            const response = await fetch('/addresses.json')
-            const addresses = await response.json()
-            const contractAddresses = document.getElementById('contractAddresses')
-            contractAddresses.innerHTML = JSON.stringify(addresses, null, 2);
+        const invitation = document.getElementById("invitation");
+        invitation.innerHTML = `<img style="max-width: 300px;" src="https://static.circlesubi.localhost/Person_1.png?${Date.now()}" />`;
+      }
 
-            // fetch 'key_phrase.txt'
-            const response2 = await fetch('/key_phrase.txt')
-            const keyPhrase = await response2.text()
-            const keyPhraseElement = document.getElementById('keyPhrase')
-            keyPhraseElement.innerHTML = keyPhrase;
+      async function loadAddresses() {
+        const response = await fetch("/addresses.json");
+        const addresses = await response.json();
+        const contractAddresses = document.getElementById("contractAddresses");
+        contractAddresses.innerHTML = JSON.stringify(addresses, null, 2);
 
-            let template = `EXTERNAL_DOMAIN="localhost"
+        // fetch 'key_phrase.txt'
+        const response2 = await fetch("/key_phrase.txt");
+        const keyPhrase = await response2.text();
+        const keyPhraseElement = document.getElementById("keyPhrase");
+        keyPhraseElement.innerHTML = keyPhrase;
+
+        let template = `EXTERNAL_DOMAIN="localhost"
 CONNECTION_STRING_RO="postgresql://postgres:postgres@localhost/api"
 APP_ID="api-server-docker"
 APP_URL="http://localhost:8080"
@@ -92,82 +97,91 @@ S3_AVATAR_FILES_BUCKET_NAME="avatar-images"
 S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX="http://localhost:9000/avatar-images/"
 S3_AVATAR_FILES_BUCKET_KEY_ID="admin"
 S3_AVATAR_FILES_BUCKET_KEY_SECRET="1234567890"
-`;
+      `;
 
-            const envFileElement = document.getElementById('envFile')
-            envFileElement.innerHTML = template;
+        const envFileElement = document.getElementById("envFile");
+        envFileElement.innerHTML = template;
+      }
+
+      function toggleStatus() {
+        const addresses = document.getElementById("contractAddresses");
+        if (addresses.style.display === "none") {
+          addresses.style.display = "block";
+        } else {
+          addresses.style.display = "none";
         }
 
-        function toggleStatus() {
-            const addresses = document.getElementById('contractAddresses')
-            if (addresses.style.display === 'none') {
-                addresses.style.display = 'block'
-            } else {
-                addresses.style.display = 'none'
-            }
-
-            const toggleStatusIndicator = document.getElementById('toggleStatusIndicator')
-            if (toggleStatusIndicator.innerHTML === '[-]') {
-                toggleStatusIndicator.innerHTML = '[+]'
-            } else {
-                toggleStatusIndicator.innerHTML = '[-]'
-            }
+        const toggleStatusIndicator = document.getElementById(
+          "toggleStatusIndicator"
+        );
+        if (toggleStatusIndicator.innerHTML === "[-]") {
+          toggleStatusIndicator.innerHTML = "[+]";
+        } else {
+          toggleStatusIndicator.innerHTML = "[-]";
         }
+      }
 
-        setInterval(() => {
-            reloadPreview();
-            loadAddresses();
-        }, 10000);
+      setInterval(() => {
+        reloadPreview();
+        loadAddresses();
+      }, 10000);
 
-        // on loaded execute
-        document.addEventListener('DOMContentLoaded', function () {
-            reloadPreview();
-            loadAddresses();
-        });
+      // on loaded execute
+      document.addEventListener("DOMContentLoaded", function () {
+        reloadPreview();
+        loadAddresses();
+      });
     </script>
-</head>
-<body>
-<div id="app">
-    <div class="container">
+  </head>
+  <body>
+    <div id="app">
+      <div class="container">
         <div class="row">
-            <div class="col-3">
-                <div>API Preview</div>
-                <iframe id="api-preview" src="https://api-server.circlesubi.localhost" width="100%" height="300"
-                        style="border: none;"></iframe>
-            </div>
-            <div class="col-3">
-                <div>Frontend Preview</div>
-                <iframe id="frontend-preview" src="https://o-platform.circlesubi.localhost/" width="100%" height="300"
-                        style="border: none;"></iframe>
-            </div>
-            <div class="col-3">
-                <div>Invitation PNG</div>
-                <div style="max-width: 300px;" id="invitation">
-                </div>
-            </div>
+          <div class="col-3">
+            <div>API Preview</div>
+            <iframe
+              id="api-preview"
+              src="https://api-server.circlesubi.localhost"
+              width="100%"
+              height="300"
+              style="border: none"
+            ></iframe>
+          </div>
+          <div class="col-3">
+            <div>Frontend Preview</div>
+            <iframe
+              id="frontend-preview"
+              src="https://o-platform.circlesubi.localhost/"
+              width="100%"
+              height="300"
+              style="border: none"
+            ></iframe>
+          </div>
+          <div class="col-3">
+            <div>Invitation PNG</div>
+            <div style="max-width: 300px" id="invitation"></div>
+            <div id="invitationLink" style="text-align: center"></div>
+          </div>
         </div>
         <div class="row">
-            <div class="col-12">
-                <div>Keyphrase</div>
-                <pre id="keyPhrase">
-                </pre>
-            </div>
+          <div class="col-12">
+            <div>Keyphrase</div>
+            <pre id="keyPhrase"></pre>
+          </div>
         </div>
         <div class="row">
-            <div class="col-12">
-                <div>Env file</div>
-                <pre id="envFile">
-                </pre>
-            </div>
+          <div class="col-12">
+            <div>Env file</div>
+            <pre id="envFile"></pre>
+          </div>
         </div>
         <div class="row">
-            <div class="col-12">
-                <div>Contract addresses</div>
-                <pre id="contractAddresses">
-                </pre>
-            </div>
+          <div class="col-12">
+            <div>Contract addresses</div>
+            <pre id="contractAddresses"></pre>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-</body>
+  </body>
 </html>
