@@ -204,7 +204,7 @@ services:
 
   ganache-init:
     depends_on:
-      - ganache
+      - nethermind
     healthcheck:
       test: ["CMD", "test", "-f", "/app/status/addresses.json"]
       interval: 10s
