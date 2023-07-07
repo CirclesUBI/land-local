@@ -1,3 +1,7 @@
+---
+networks:
+  internal:
+
 services:
   indexer-db:
     image: postgres:15
@@ -172,19 +176,31 @@ services:
     volumes:
       - ${PWD}/.state/ganache-init/status/:/app/status/
 
-  ganache:
-    build:
-      dockerfile: ${PWD}/../../modules/ganache/Dockerfile
-      context: ${PWD}/../../modules/ganache
-    expose:
-      - 8545
+  nethermind:
+    image: nethermind/nethermind:${NETHERMIND_VERSION}
+    command: ["--config", "${NETHERMIND_CONFIG}", "--log", "${NETHERMIND_LOG}"]
+    restart: unless-stopped
     networks:
       - internal
-    ports:
-      - 8545:8545
+    expose:
+      - "8545"
+      - "8550"
+      - "8551"
+      - "30303:30303/tcp" # p2p
+      - "30303:30303/udp" # p2p
     volumes:
-      #- ${PWD}/.state/ganache:/usr/src/app/node_modules/hardhat/internal/core/node/data
-      - ${PWD}/.state/ganache:/var/ganache-db
+      - ${PWD}/.state/nethermind/db:/nethermind/nethermind_db
+      - ${PWD}/.state/nethermind/keystore:/nethermind/keystore
+      - ${PWD}/.state/nethermind/logs:/nethermind/logs
+    environment:
+      NETHERMIND_CONFIG:                       ${NETHERMIND_CONFIG}
+      NETHERMIND_HEALTHCHECKSCONFIG_ENABLED:   ${NETHERMIND_HEALTHCHECKSCONFIG_ENABLED}
+      NETHERMIND_INITCONFIG_MEMORYHINT:        ${NETHERMIND_INITCONFIG_MEMORYHINT}
+      NETHERMIND_NETWORKCONFIG_MAXACTIVEPEERS: ${NETHERMIND_NETWORKCONFIG_MAXACTIVEPEERS}
+      NETHERMIND_JSONRPCCONFIG_ENABLED:        ${NETHERMIND_JSONRPCCONFIG_ENABLED}
+      NETHERMIND_JSONRPCCONFIG_WEBSOCKETSPORT: ${NETHERMIND_JSONRPCCONFIG_WEBSOCKETSPORT}
+      NETHERMIND_JSONRPCCONFIG_ENABLEDMODULES: ${NETHERMIND_JSONRPCCONFIG_ENABLEDMODULES}
+      NETHERMIND_JSONRPCCONFIG_HOST:           ${NETHERMIND_JSONRPCCONFIG_HOST}
 
   ganache-init:
     depends_on:
@@ -394,6 +410,3 @@ services:
         condition: service_started
       frontend:
         condition: service_healthy
-
-networks:
-  internal:
