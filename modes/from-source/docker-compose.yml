@@ -77,7 +77,7 @@ services:
     depends_on:
       api-db:
         condition: service_healthy
-      ganache-init:
+      chain-init:
         condition: service_healthy
     networks:
       - internal
@@ -95,7 +95,7 @@ services:
       INITIAL_USER_EMAIL: ${API_DATA_INITIAL_USER_EMAIL}
       APP_URL: ${FRONTEND_APP_URL}
     volumes:
-      - ${PWD}/.state/ganache-init/status/:/app/status/ # Required to access the addresses of the deployed contracts
+      - ${PWD}/.state/chain-init/status/:/app/status/ # Required to access the addresses of the deployed contracts
       - ${PWD}/.state/static-content/public:/public # Required to provide the generated invitation QR codes to the user
       - ${PWD}/../../../api-server:/app/api-server
 
@@ -107,7 +107,7 @@ services:
     depends_on:
       api-db-init:
         condition: service_healthy
-      ganache-init:
+      chain-init:
         condition: service_healthy
       blockchain-indexer:
         condition: service_started
@@ -149,7 +149,7 @@ services:
       S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX: ${API_SERVER_S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX}
     volumes:
       - ${PWD}/../../../api-server:/api-server
-      - ${PWD}/.state/ganache-init/status/:/app/status/
+      - ${PWD}/.state/chain-init/status/:/app/status/
 
   blockchain-indexer:
     build:
@@ -158,7 +158,7 @@ services:
     expose:
       - 8675
     depends_on:
-      ganache-init:
+      chain-init:
         condition: service_healthy
       indexer-db-init:
         condition: service_healthy
@@ -174,7 +174,7 @@ services:
       INDEXER_CONNECTION_STRING: ${BLOCKCHAIN_INDEXER_CONNECTION_STRING}
       START_FROM_BLOCK: ${BLOCKCHAIN_INDEXER_START_FROM_BLOCK}
     volumes:
-      - ${PWD}/.state/ganache-init/status/:/app/status/
+      - ${PWD}/.state/chain-init/status/:/app/status/
 
   nethermind:
     image: nethermind/nethermind:${NETHERMIND_VERSION}
@@ -202,7 +202,7 @@ services:
       NETHERMIND_JSONRPCCONFIG_ENABLEDMODULES: ${NETHERMIND_JSONRPCCONFIG_ENABLEDMODULES}
       NETHERMIND_JSONRPCCONFIG_HOST:           ${NETHERMIND_JSONRPCCONFIG_HOST}
 
-  ganache-init:
+  chain-init:
     depends_on:
       - nethermind
     healthcheck:
@@ -212,12 +212,12 @@ services:
       retries: 20
       start_period: 20s
     build:
-      dockerfile: ${PWD}/../../modules/ganache-init/Dockerfile
-      context: ${PWD}/../../modules/ganache-init
+      dockerfile: ${PWD}/../../modules/chain-init/Dockerfile
+      context: ${PWD}/../../modules/chain-init
     networks:
       - internal
     volumes:
-      - ${PWD}/.state/ganache-init/status/:/app/status/
+      - ${PWD}/.state/chain-init/status/:/app/status/
 
   other-blockchain-user:
     restart: unless-stopped
@@ -225,7 +225,7 @@ services:
       dockerfile: ${PWD}/../../modules/other_chain_user/Dockerfile
       context: ${PWD}/../../modules/other_chain_user
     depends_on:
-      ganache-init:
+      chain-init:
         condition: service_healthy
     networks:
       - internal
@@ -383,7 +383,7 @@ services:
       - ${PWD}/../../modules/static-content/Caddyfile:/etc/caddy/Caddyfile
       - ${PWD}/.state/static-content/public:/var/www
       - ${PWD}/../../modules/static-content/index.html:/var/www/index.html
-      - ${PWD}/.state/ganache-init/status/addresses.json:/var/www/addresses.json
+      - ${PWD}/.state/chain-init/status/addresses.json:/var/www/addresses.json
 
   container-monitor:
     build:
