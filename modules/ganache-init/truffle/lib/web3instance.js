@@ -1,6 +1,6 @@
 const Web3 = require("web3");
 
-let addr = "http://ganache:8545";
+let addr = "http://nethermind:8545";
 try {
     const addresses = require("/app/status/addresses.temp.json");
     addr = `http://${addresses.network.host}:${addresses.network.port}`;
