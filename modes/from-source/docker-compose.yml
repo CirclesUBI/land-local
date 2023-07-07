@@ -186,8 +186,8 @@ services:
       - "8545"
       - "8550"
       - "8551"
-      - "30303:30303/tcp" # p2p
-      - "30303:30303/udp" # p2p
+      - "30303/tcp" # p2p
+      - "30303/udp" # p2p
     volumes:
       - ${PWD}/.state/nethermind/db:/nethermind/nethermind_db
       - ${PWD}/.state/nethermind/keystore:/nethermind/keystore
