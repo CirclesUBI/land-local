@@ -178,10 +178,19 @@ services:
 
   nethermind:
     image: nethermind/nethermind:${NETHERMIND_VERSION}
-    command: ["--config", "${NETHERMIND_CONFIG}", "--log", "${NETHERMIND_LOG}"]
+    entrypoint:
+      - "/usr/bin/sh"
+      - "-c"
+      - "apt update && apt install -y curl && ./Nethermind.Runner --config ${NETHERMIND_CONFIG} --log ${NETHERMIND_LOG}"
     restart: unless-stopped
     networks:
       - internal
+    healthcheck:
+      test: ["CMD-SHELL", "curl 'http://nethermind:8545' --data-raw '{\"jsonrpc\":\"2.0\",\"method\":\"net_listening\",\"params\":[],\"id\":1}'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
     expose:
       - "8545"
       - "8550"
@@ -204,7 +213,8 @@ services:
 
   chain-init:
     depends_on:
-      - nethermind
+      nethermind:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "test", "-f", "/app/status/addresses.json"]
       interval: 10s
