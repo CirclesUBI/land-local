@@ -335,7 +335,7 @@ services:
       /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
       /usr/bin/mc mb myminio/avatar-images;
       /usr/bin/mc anonymous set download myminio/avatar-images;
-
+      exit 0;
       "
 
   caddy:
