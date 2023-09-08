@@ -1,0 +1,17 @@
+{
+  "name": "scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "getPrivateKey.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "keythereum": "^2.x",
+    "node-fetch": "^2.x",
+    "util": "^0.12.5",
+    "web3": "^4.1.1"
+  }
+}

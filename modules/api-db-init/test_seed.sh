@@ -1,4 +1,4 @@
-file_path="${HOME}/src/CirclesUBI/land-local/modes/from-source/.state/ganache-init/status/addresses.json"
+file_path="${HOME}/src/CirclesUBI/land-local/modes/from-source/.state/chain-init/status/addresses.json"
 
 if [ -f "$file_path" ]; then
     echo "Using addresses from $file_path:"

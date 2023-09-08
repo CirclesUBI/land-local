@@ -59,12 +59,12 @@ module.exports = {
 
   networks: {
     development: {
-     host: "nethermind",       // Localhost (default: none)
-     port: 8545,            // Standard Ethereum port (default: none)
-     network_id: "*",       // Any network (default: none)
-    }
+      from: "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf",
+      host: "nethermind",
+      port: 8545,
+      network_id: "99",
+    },
   },
-
 
   // Set default mocha options here, use special reporters, etc.
   mocha: {
@@ -74,7 +74,7 @@ module.exports = {
   // Configure your compilers
   compilers: {
     solc: {
-      version: "0.7.0" // Fetch exact version from solc-bin (default: truffle's version)
+      version: "^0.7.0", // Fetch exact version from solc-bin (default: truffle's version)
       // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
       // settings: {          // See the solidity docs for advice about optimization and evmVersion
       //  optimizer: {
@@ -83,6 +83,6 @@ module.exports = {
       //  },
       //  evmVersion: "byzantium"
       // }
-    }
-  }
+    },
+  },
 };

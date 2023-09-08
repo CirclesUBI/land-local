@@ -8,4 +8,5 @@ local.iml
 
 modules/caddy-src/ca-certs/
 modules/caddy/ca-certs/
+scripts/node_modules/
 

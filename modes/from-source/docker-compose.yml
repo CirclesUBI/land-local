@@ -3,194 +3,210 @@ networks:
   internal:
 
 services:
-  indexer-db:
-    image: postgres:15
-    restart: unless-stopped
-    ports:
-      - 5433:5432
-    networks:
-      - internal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 100
-    environment:
-      POSTGRES_PASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
-      PGPASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
-      POSTGRES_DB: ${INDEXER_DB_POSTGRES_DB}
-    volumes:
-      - ${PWD}/.state/indexer-db/pg_data:/var/lib/postgresql/data
+  # indexer-db:
+  #   image: postgres:15
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5433:5432
+  #   networks:
+  #     - internal
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 100
+  #   environment:
+  #     POSTGRES_PASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
+  #     PGPASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
+  #     POSTGRES_DB: ${INDEXER_DB_POSTGRES_DB}
+  #   volumes:
+  #     - ${PWD}/.state/indexer-db/pg_data:/var/lib/postgresql/data
 
-  indexer-db-init:
-    build:
-      dockerfile: ${PWD}/../../modules/indexer-db-init/Dockerfile
-      context: ${PWD}/../../modules/indexer-db-init
-    healthcheck:
-      test: ["CMD", "test", "-f", "/app/.ready"]
-      interval: 30s
-      timeout: 10s
-      retries: 12
-    depends_on:
-      indexer-db:
-        condition: service_healthy
-    networks:
-      - internal
-    environment:
-      POSTGRES_HOST: ${INDEXER_DB_POSTGRES_HOST}
-      POSTGRES_PORT: ${INDEXER_DB_POSTGRES_PORT}
-      POSTGRES_DB: ${INDEXER_DB_POSTGRES_DB}
-      POSTGRES_USER: ${INDEXER_DB_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
+  # indexer-db-init:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/indexer-db-init/Dockerfile
+  #     context: ${PWD}/../../modules/indexer-db-init
+  #   healthcheck:
+  #     test: ["CMD", "test", "-f", "/app/.ready"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 12
+  #   depends_on:
+  #     indexer-db:
+  #       condition: service_healthy
+  #   networks:
+  #     - internal
+  #   environment:
+  #     POSTGRES_HOST: ${INDEXER_DB_POSTGRES_HOST}
+  #     POSTGRES_PORT: ${INDEXER_DB_POSTGRES_PORT}
+  #     POSTGRES_DB: ${INDEXER_DB_POSTGRES_DB}
+  #     POSTGRES_USER: ${INDEXER_DB_POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
 
-  api-db:
-    build:
-      dockerfile: ${PWD}/../../modules/api-db-src/Dockerfile
-      context: ${PWD}/../../modules/api-db-src
-    restart: unless-stopped
-    ports:
-      - 5432:5432
-    networks:
-      - internal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 100
-    environment:
-      POSTGRES_PASSWORD: ${API_DB_POSTGRES_PASSWORD}
-      PGPASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
-      POSTGRES_DB: ${API_DB_POSTGRES_DB}
-    volumes:
-      - ${PWD}/.state/api-db/pg_data:/var/lib/postgresql/data
-      - ${PWD}/../../modules/api-db-src/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+  # api-db:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/api-db-src/Dockerfile
+  #     context: ${PWD}/../../modules/api-db-src
+  #   restart: unless-stopped
+  #   ports:
+  #     - 5432:5432
+  #   networks:
+  #     - internal
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 100
+  #   environment:
+  #     POSTGRES_PASSWORD: ${API_DB_POSTGRES_PASSWORD}
+  #     PGPASSWORD: ${INDEXER_DB_POSTGRES_PASSWORD}
+  #     POSTGRES_DB: ${API_DB_POSTGRES_DB}
+  #   volumes:
+  #     - ${PWD}/.state/api-db/pg_data:/var/lib/postgresql/data
+  #     - ${PWD}/../../modules/api-db-src/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
 
-  api-db-init:
-    build:
-      dockerfile: ${PWD}/../../modules/api-db-init/Dockerfile
-      context: ${PWD}/../../modules/api-db-init
-    healthcheck:
-      test: ["CMD", "test", "-f", "/app/.ready"]
-      interval: 30s
-      timeout: 10s
-      retries: 12
-    depends_on:
-      api-db:
-        condition: service_healthy
-      chain-init:
-        condition: service_healthy
-    networks:
-      - internal
-    environment:
-      POSTGRES_HOST: ${API_DB_POSTGRES_HOST}
-      POSTGRES_PORT: ${API_DB_POSTGRES_PORT}
-      POSTGRES_DB: ${API_DB_POSTGRES_DB}
-      POSTGRES_USER: ${API_DB_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${API_DB_POSTGRES_PASSWORD}
-      INITIAL_USER_SAFE_ADDRESS: ${API_DATA_INITIAL_USER_SAFE_ADDRESS}
-      INITIAL_USER_SAFE_OWNER_ADDRESS: ${API_DATA_INITIAL_USER_SAFE_OWNER_ADDRESS}
-      INITIAL_ORG_SAFE_ADDRESS: ${API_DATA_INITIAL_ORG_SAFE_ADDRESS}
-      INITIAL_ORG_SAFE_OWNER_ADDRESS: ${API_DATA_INITIAL_ORG_SAFE_OWNER_ADDRESS}
-      INITIAL_USER_NAME: ${API_DATA_INITIAL_USER_NAME}
-      INITIAL_USER_EMAIL: ${API_DATA_INITIAL_USER_EMAIL}
-      APP_URL: ${FRONTEND_APP_URL}
-    volumes:
-      - ${PWD}/.state/chain-init/status/:/app/status/ # Required to access the addresses of the deployed contracts
-      - ${PWD}/.state/static-content/public:/public # Required to provide the generated invitation QR codes to the user
-      - ${PWD}/../../../api-server:/app/api-server
+  # api-db-init:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/api-db-init/Dockerfile
+  #     context: ${PWD}/../../modules/api-db-init
+  #   healthcheck:
+  #     test: ["CMD", "test", "-f", "/app/.ready"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 12
+  #   depends_on:
+  #     api-db:
+  #       condition: service_healthy
+  #     chain-init:
+  #       condition: service_healthy
+  #   networks:
+  #     - internal
+  #   environment:
+  #     POSTGRES_HOST: ${API_DB_POSTGRES_HOST}
+  #     POSTGRES_PORT: ${API_DB_POSTGRES_PORT}
+  #     POSTGRES_DB: ${API_DB_POSTGRES_DB}
+  #     POSTGRES_USER: ${API_DB_POSTGRES_USER}
+  #     POSTGRES_PASSWORD: ${API_DB_POSTGRES_PASSWORD}
+  #     INITIAL_USER_SAFE_ADDRESS: ${API_DATA_INITIAL_USER_SAFE_ADDRESS}
+  #     INITIAL_USER_SAFE_OWNER_ADDRESS: ${API_DATA_INITIAL_USER_SAFE_OWNER_ADDRESS}
+  #     INITIAL_ORG_SAFE_ADDRESS: ${API_DATA_INITIAL_ORG_SAFE_ADDRESS}
+  #     INITIAL_ORG_SAFE_OWNER_ADDRESS: ${API_DATA_INITIAL_ORG_SAFE_OWNER_ADDRESS}
+  #     INITIAL_USER_NAME: ${API_DATA_INITIAL_USER_NAME}
+  #     INITIAL_USER_EMAIL: ${API_DATA_INITIAL_USER_EMAIL}
+  #     APP_URL: ${FRONTEND_APP_URL}
+  #   volumes:
+  #     - ${PWD}/.state/chain-init/status/:/app/status/ # Required to access the addresses of the deployed contracts
+  #     - ${PWD}/.state/static-content/public:/public # Required to provide the generated invitation QR codes to the user
+  #     - ${PWD}/../../../api-server:/app/api-server
 
-  api-server:
-    build:
-      dockerfile: ${PWD}/../../modules/api-server-src/Dockerfile
-      context: ${PWD}/../../modules/api-server-src
-    restart: unless-stopped
-    depends_on:
-      api-db-init:
-        condition: service_healthy
-      chain-init:
-        condition: service_healthy
-      blockchain-indexer:
-        condition: service_started
-      pathfinder-proxy:
-        condition: service_started
-      minio-init:
-        condition: service_started
-    networks:
-      - internal
-    environment:
-      APP_ID: ${API_SERVER_APP_ID}
-      APP_URL: ${FRONTEND_APP_URL}
-      BLOCKCHAIN_INDEX_DB_CONNECTION_STRING: ${API_SERVER_BLOCKCHAIN_INDEX_DB_CONNECTION_STRING}
-      BLOCKCHAIN_INDEX_WS_URL: ${API_SERVER_BLOCKCHAIN_INDEX_WS_URL}
-      CONNECTION_STRING_RO: ${API_SERVER_CONNECTION_STRING_RO}
-      CONNECTION_STRING_RW: ${API_SERVER_CONNECTION_STRING_RW}
-      CORS_ORIGINS: ${API_SERVER_CORS_ORIGINS}
-      DEBUG: ${API_SERVER_DEBUG}
-      DELAY_START: ${API_SERVER_DELAY_START}
-      EXTERNAL_DOMAIN: ${API_SERVER_EXTERNAL_DOMAIN}
-      INVITATION_FUNDS_SAFE_ADDRESS: ${API_SERVER_INVITATION_FUNDS_SAFE_ADDRESS}
-      INVITATION_FUNDS_SAFE_KEY: ${API_SERVER_INVITATION_FUNDS_SAFE_KEY}
-      OPERATOR_ORGANISATION_ADDRESS: ${API_SERVER_OPERATOR_ORGANISATION_ADDRESS}
-      CIRCLES_HUB_ADDRESS: ${CONTRACT_ADDRESS_CIRCLES_HUB}
-      MAIL_FROM: ${API_SERVER_MAIL_FROM}
-      PATHFINDER_URL: ${API_SERVER_PATHFINDER_URL}
-      RPC_GATEWAY_URL: ${INTERNAL_CHAIN_RPC_URL}
-      SMTP_DEBUG: ${API_SERVER_SMTP_DEBUG}
-      SMTP_HOST: ${API_SERVER_SMTP_HOST}
-      SMTP_PASSWORD: ${API_SERVER_SMTP_PASSWORD}
-      SMTP_PORT: ${API_SERVER_SMTP_PORT}
-      SMTP_USER: ${API_SERVER_SMTP_USER}
-      COOKIE_SAME_SITE_POLICY: ${API_SERVER_COOKIE_SAME_SITE_POLICY}
-      COOKIE_SECURE_POLICY: ${API_SERVER_COOKIE_SECURE_POLICY}
-      S3_AVATAR_FILES_BUCKET_ENDPOINT: ${API_SERVER_S3_AVATAR_FILES_BUCKET_ENDPOINT}
-      S3_AVATAR_FILES_BUCKET_NAME: ${API_SERVER_S3_AVATAR_FILES_BUCKET_NAME}
-      S3_AVATAR_FILES_BUCKET_KEY_ID: ${MINIO_ROOT_USER}
-      S3_AVATAR_FILES_BUCKET_KEY_SECRET: ${MINIO_ROOT_PASSWORD}
-      S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX: ${API_SERVER_S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX}
-    volumes:
-      - ${PWD}/../../../api-server:/api-server
-      - ${PWD}/.state/chain-init/status/:/app/status/
+  # api-server:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/api-server-src/Dockerfile
+  #     context: ${PWD}/../../modules/api-server-src
+  #   restart: unless-stopped
+  #   depends_on:
+  #     api-db-init:
+  #       condition: service_healthy
+  #     chain-init:
+  #       condition: service_healthy
+  #     blockchain-indexer:
+  #       condition: service_started
+  #     pathfinder-proxy:
+  #       condition: service_started
+  #     minio-init:
+  #       condition: service_started
+  #   networks:
+  #     - internal
+  #   environment:
+  #     APP_ID: ${API_SERVER_APP_ID}
+  #     APP_URL: ${FRONTEND_APP_URL}
+  #     BLOCKCHAIN_INDEX_DB_CONNECTION_STRING: ${API_SERVER_BLOCKCHAIN_INDEX_DB_CONNECTION_STRING}
+  #     BLOCKCHAIN_INDEX_WS_URL: ${API_SERVER_BLOCKCHAIN_INDEX_WS_URL}
+  #     CONNECTION_STRING_RO: ${API_SERVER_CONNECTION_STRING_RO}
+  #     CONNECTION_STRING_RW: ${API_SERVER_CONNECTION_STRING_RW}
+  #     CORS_ORIGINS: ${API_SERVER_CORS_ORIGINS}
+  #     DEBUG: ${API_SERVER_DEBUG}
+  #     DELAY_START: ${API_SERVER_DELAY_START}
+  #     EXTERNAL_DOMAIN: ${API_SERVER_EXTERNAL_DOMAIN}
+  #     INVITATION_FUNDS_SAFE_ADDRESS: ${API_SERVER_INVITATION_FUNDS_SAFE_ADDRESS}
+  #     INVITATION_FUNDS_SAFE_KEY: ${API_SERVER_INVITATION_FUNDS_SAFE_KEY}
+  #     OPERATOR_ORGANISATION_ADDRESS: ${API_SERVER_OPERATOR_ORGANISATION_ADDRESS}
+  #     CIRCLES_HUB_ADDRESS: ${CONTRACT_ADDRESS_CIRCLES_HUB}
+  #     MAIL_FROM: ${API_SERVER_MAIL_FROM}
+  #     PATHFINDER_URL: ${API_SERVER_PATHFINDER_URL}
+  #     RPC_GATEWAY_URL: ${INTERNAL_CHAIN_RPC_URL}
+  #     SMTP_DEBUG: ${API_SERVER_SMTP_DEBUG}
+  #     SMTP_HOST: ${API_SERVER_SMTP_HOST}
+  #     SMTP_PASSWORD: ${API_SERVER_SMTP_PASSWORD}
+  #     SMTP_PORT: ${API_SERVER_SMTP_PORT}
+  #     SMTP_USER: ${API_SERVER_SMTP_USER}
+  #     COOKIE_SAME_SITE_POLICY: ${API_SERVER_COOKIE_SAME_SITE_POLICY}
+  #     COOKIE_SECURE_POLICY: ${API_SERVER_COOKIE_SECURE_POLICY}
+  #     S3_AVATAR_FILES_BUCKET_ENDPOINT: ${API_SERVER_S3_AVATAR_FILES_BUCKET_ENDPOINT}
+  #     S3_AVATAR_FILES_BUCKET_NAME: ${API_SERVER_S3_AVATAR_FILES_BUCKET_NAME}
+  #     S3_AVATAR_FILES_BUCKET_KEY_ID: ${MINIO_ROOT_USER}
+  #     S3_AVATAR_FILES_BUCKET_KEY_SECRET: ${MINIO_ROOT_PASSWORD}
+  #     S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX: ${API_SERVER_S3_AVATAR_FILES_BUCKET_PUBLIC_URL_PREFIX}
+  #   volumes:
+  #     - ${PWD}/../../../api-server:/api-server
+  #     - ${PWD}/.state/chain-init/status/:/app/status/
 
-  blockchain-indexer:
-    build:
-      dockerfile: ${PWD}/../../modules/blockchain-indexer-src/Dockerfile
-      context: ${PWD}/../../../blockchain-indexer
-    expose:
-      - 8675
-    depends_on:
-      chain-init:
-        condition: service_healthy
-      indexer-db-init:
-        condition: service_healthy
-    restart: unless-stopped
-    networks:
-      - internal
-    ports:
-      - 8675:8675
-    environment:
-      INDEXER_WEBSOCKET_URL: ${BLOCKCHAIN_INDEXER_WEBSOCKET_URL}
-      INDEXER_RPC_GATEWAY_URL: ${INTERNAL_CHAIN_RPC_URL}
-      HUB_ADDRESS: ${CONTRACT_ADDRESS_CIRCLES_HUB}
-      INDEXER_CONNECTION_STRING: ${BLOCKCHAIN_INDEXER_CONNECTION_STRING}
-      START_FROM_BLOCK: ${BLOCKCHAIN_INDEXER_START_FROM_BLOCK}
-    volumes:
-      - ${PWD}/.state/chain-init/status/:/app/status/
+  # blockchain-indexer:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/blockchain-indexer-src/Dockerfile
+  #     context: ${PWD}/../../../blockchain-indexer
+  #   expose:
+  #     - 8675
+  #   depends_on:
+  #     chain-init:
+  #       condition: service_healthy
+  #     indexer-db-init:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
+  #   ports:
+  #     - 8675:8675
+  #   environment:
+  #     INDEXER_WEBSOCKET_URL: ${BLOCKCHAIN_INDEXER_WEBSOCKET_URL}
+  #     INDEXER_RPC_GATEWAY_URL: ${INTERNAL_CHAIN_RPC_URL}
+  #     HUB_ADDRESS: ${CONTRACT_ADDRESS_CIRCLES_HUB}
+  #     INDEXER_CONNECTION_STRING: ${BLOCKCHAIN_INDEXER_CONNECTION_STRING}
+  #     START_FROM_BLOCK: ${BLOCKCHAIN_INDEXER_START_FROM_BLOCK}
+  #   volumes:
+  #     - ${PWD}/.state/chain-init/status/:/app/status/
 
   nethermind:
-    image: nethermind/nethermind:${NETHERMIND_VERSION}
-    entrypoint:
-      - "/usr/bin/sh"
-      - "-c"
-      - "apt update && apt install -y curl && ./Nethermind.Runner --config ${NETHERMIND_CONFIG} --log ${NETHERMIND_LOG}"
+    build:
+      dockerfile: ${PWD}/../../modules/nethermind/Dockerfile
+      context: ${PWD}/../../modules/nethermind
+      args:
+        NETHERMIND_VERSION: ${NETHERMIND_VERSION}
+        NETHERMIND_CONFIG: ${NETHERMIND_CONFIG}
+    # image: nethermind/nethermind:${NETHERMIND_VERSION}
+    # command: --config config
+    # entrypoint:
+    #   - "/usr/bin/sh"
+    #   - "-c"
+    #   - "apt update && apt install -y curl && ./Nethermind.Runner --config ${NETHERMIND_CONFIG} --log ${NETHERMIND_LOG}"
     restart: unless-stopped
+    # networks:
+    #   vpcbr:
+    #     ipv4_address: "10.5.0.2"
     networks:
       - internal
     healthcheck:
-      test: ["CMD-SHELL", "curl 'http://nethermind:8545' --data-raw '{\"jsonrpc\":\"2.0\",\"method\":\"net_listening\",\"params\":[],\"id\":1}'"]
+      test:
+        [
+          "CMD-SHELL",
+          'curl ''http://nethermind:8545'' --data-raw ''{"jsonrpc":"2.0","method":"net_listening","params":[],"id":1}''',
+        ]
       interval: 10s
       timeout: 5s
       retries: 20
       start_period: 20s
+    ports:
+      - 0.0.0.0:8547:8545
     expose:
       - "8545"
       - "8550"
@@ -198,18 +214,22 @@ services:
       - "30303/tcp" # p2p
       - "30303/udp" # p2p
     volumes:
-      - ${PWD}/.state/nethermind/db:/nethermind/nethermind_db
+      # - ${PWD}/.state/nethermind/logs:/nethermind/logs
+      - ${PWD}/.state/nethermind/data:/nethermind/data
+      # - ${PWD}/.state/nethermind/genesis/spaceneth.cfg:/genesis/spaceneth.cfg
+      # - ${PWD}/.state/nethermind/configs:/nethermind/configs
+      # - ${PWD}/.state/nethermind/staticNodes:/nethermind/Data
+      - ${PWD}/.state/nethermind/nethermind_db:/nethermind/nethermind_db
       - ${PWD}/.state/nethermind/keystore:/nethermind/keystore
-      - ${PWD}/.state/nethermind/logs:/nethermind/logs
     environment:
-      NETHERMIND_CONFIG:                       ${NETHERMIND_CONFIG}
-      NETHERMIND_HEALTHCHECKSCONFIG_ENABLED:   ${NETHERMIND_HEALTHCHECKSCONFIG_ENABLED}
-      NETHERMIND_INITCONFIG_MEMORYHINT:        ${NETHERMIND_INITCONFIG_MEMORYHINT}
+      NETHERMIND_CONFIG: ${NETHERMIND_CONFIG}
+      NETHERMIND_HEALTHCHECKSCONFIG_ENABLED: ${NETHERMIND_HEALTHCHECKSCONFIG_ENABLED}
+      NETHERMIND_INITCONFIG_MEMORYHINT: ${NETHERMIND_INITCONFIG_MEMORYHINT}
       NETHERMIND_NETWORKCONFIG_MAXACTIVEPEERS: ${NETHERMIND_NETWORKCONFIG_MAXACTIVEPEERS}
-      NETHERMIND_JSONRPCCONFIG_ENABLED:        ${NETHERMIND_JSONRPCCONFIG_ENABLED}
+      NETHERMIND_JSONRPCCONFIG_ENABLED: ${NETHERMIND_JSONRPCCONFIG_ENABLED}
       NETHERMIND_JSONRPCCONFIG_WEBSOCKETSPORT: ${NETHERMIND_JSONRPCCONFIG_WEBSOCKETSPORT}
       NETHERMIND_JSONRPCCONFIG_ENABLEDMODULES: ${NETHERMIND_JSONRPCCONFIG_ENABLEDMODULES}
-      NETHERMIND_JSONRPCCONFIG_HOST:           ${NETHERMIND_JSONRPCCONFIG_HOST}
+      NETHERMIND_JSONRPCCONFIG_HOST: ${NETHERMIND_JSONRPCCONFIG_HOST}
 
   chain-init:
     depends_on:
@@ -229,194 +249,194 @@ services:
     volumes:
       - ${PWD}/.state/chain-init/status/:/app/status/
 
-  other-blockchain-user:
-    restart: unless-stopped
-    build:
-      dockerfile: ${PWD}/../../modules/other_chain_user/Dockerfile
-      context: ${PWD}/../../modules/other_chain_user
-    depends_on:
-      chain-init:
-        condition: service_healthy
-    networks:
-      - internal
-    environment:
-      RPC_URL: ${INTERNAL_CHAIN_RPC_URL}
-      TO_ADDRESS: ${OTHER_BLOCKCHAIN_USER_TO_ADDRESS}
-      PRIVATE_KEY: ${OTHER_BLOCKCHAIN_PRIVATE_KEY}
+  # other-blockchain-user:
+  #   restart: unless-stopped
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/other_chain_user/Dockerfile
+  #     context: ${PWD}/../../modules/other_chain_user
+  #   depends_on:
+  #     chain-init:
+  #       condition: service_healthy
+  #   networks:
+  #     - internal
+  #   environment:
+  #     RPC_URL: ${INTERNAL_CHAIN_RPC_URL}
+  #     TO_ADDRESS: ${OTHER_BLOCKCHAIN_USER_TO_ADDRESS}
+  #     PRIVATE_KEY: ${OTHER_BLOCKCHAIN_PRIVATE_KEY}
 
-  pathfinder2-updater:
-    depends_on:
-      - pathfinder2
-      - blockchain-indexer
-    build:
-      dockerfile: ${PWD}/../../modules/pathfinder2-updater-src/Dockerfile
-      context: ${PWD}/../../../pathfinder2-updater
-    restart: unless-stopped
-    networks:
-      - internal
-    environment:
-      INDEXER_DB_CONNECTION_STRING: ${PATHFINDER_UPDATER_INDEXER_DB_CONNECTION_STRING}
-      INDEXER_WS_URL: ${PATHFINDER_UPDATER_INDEXER_WS_URL}
-      INTERNAL_CAPACITY_GRAPH_PATH: ${PATHFINDER_UPDATER_INTERNAL_CAPACITY_GRAPH_PATH}
-      EXTERNAL_CAPACITY_GRAPH_PATH: ${PATHFINDER_UPDATER_EXTERNAL_CAPACITY_GRAPH_PATH}
-      PATHFINDER_RPC_URL: ${PATHFINDER_UPDATER_RPC_URL}
-    volumes:
-      - ${PWD}/.state/pathfinder:/var/pathfinder2/data
+  # pathfinder2-updater:
+  #   depends_on:
+  #     - pathfinder2
+  #     - blockchain-indexer
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/pathfinder2-updater-src/Dockerfile
+  #     context: ${PWD}/../../../pathfinder2-updater
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
+  #   environment:
+  #     INDEXER_DB_CONNECTION_STRING: ${PATHFINDER_UPDATER_INDEXER_DB_CONNECTION_STRING}
+  #     INDEXER_WS_URL: ${PATHFINDER_UPDATER_INDEXER_WS_URL}
+  #     INTERNAL_CAPACITY_GRAPH_PATH: ${PATHFINDER_UPDATER_INTERNAL_CAPACITY_GRAPH_PATH}
+  #     EXTERNAL_CAPACITY_GRAPH_PATH: ${PATHFINDER_UPDATER_EXTERNAL_CAPACITY_GRAPH_PATH}
+  #     PATHFINDER_RPC_URL: ${PATHFINDER_UPDATER_RPC_URL}
+  #   volumes:
+  #     - ${PWD}/.state/pathfinder:/var/pathfinder2/data
 
-  pathfinder2:
-    build:
-      dockerfile: ${PWD}/../../modules/pathfinder2-src/Dockerfile
-      context: ${PWD}/../../../pathfinder2
-    restart: unless-stopped
-    networks:
-      - internal
-    expose:
-      - "54389"
-    command:
-      - "0.0.0.0:54389"
-    volumes:
-      - ${PWD}/.state/pathfinder:/var/pathfinder2/data
+  # pathfinder2:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/pathfinder2-src/Dockerfile
+  #     context: ${PWD}/../../../pathfinder2
+  #   restart: unless-stopped
+  #   networks:
+  #     - internal
+  #   expose:
+  #     - "54389"
+  #   command:
+  #     - "0.0.0.0:54389"
+  #   volumes:
+  #     - ${PWD}/.state/pathfinder:/var/pathfinder2/data
 
-  pathfinder-proxy:
-    restart: unless-stopped
-    build:
-      dockerfile: ${PWD}/../../modules/pathfinder-proxy-src/Dockerfile
-      context: ${PWD}/../../modules/pathfinder-proxy-src
-    depends_on:
-      - pathfinder2-updater
-      - pathfinder2
-    ports:
-      - 8081:80
-    networks:
-      - internal
-    environment:
-      PORT: ${PATHFINDER_PROXY_PORT}
-      CORS_ORIGINS: ${PATHFINDER_PROXY_CORS_ORIGINS}
-      UPSTREAM_SERVICE_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_SERVICE_ENDPOINTS}
-      UPSTREAM_HEALTH_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_HEALTH_ENDPOINTS}
-    volumes:
-      - ${PWD}/../../../pathfinder-proxy:/pathfinder-proxy
+  # pathfinder-proxy:
+  #   restart: unless-stopped
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/pathfinder-proxy-src/Dockerfile
+  #     context: ${PWD}/../../modules/pathfinder-proxy-src
+  #   depends_on:
+  #     - pathfinder2-updater
+  #     - pathfinder2
+  #   ports:
+  #     - 8081:80
+  #   networks:
+  #     - internal
+  #   environment:
+  #     PORT: ${PATHFINDER_PROXY_PORT}
+  #     CORS_ORIGINS: ${PATHFINDER_PROXY_CORS_ORIGINS}
+  #     UPSTREAM_SERVICE_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_SERVICE_ENDPOINTS}
+  #     UPSTREAM_HEALTH_ENDPOINTS: ${PATHFINDER_PROXY_UPSTREAM_HEALTH_ENDPOINTS}
+  #   volumes:
+  #     - ${PWD}/../../../pathfinder-proxy:/pathfinder-proxy
 
-  frontend:
-    depends_on:
-      - api-server
-    restart: unless-stopped
-    build:
-      dockerfile: ${PWD}/../../modules/frontend-src/Dockerfile
-      context: ${PWD}/../../modules/frontend-src
-      args:
-        API_ENDPOINT: ${FRONTEND_API_ENDPOINT}
-        DEFAULT_APP_LANGUAGE: ${FRONTEND_DEFAULT_APP_LANGUAGE}
-        CIRCLES_SUBGRAPH_ENDPOINT: ${FRONTEND_CIRCLES_SUBGRAPH_ENDPOINT}
-        PATHFINDER_ENDPOINT: ${FRONTEND_PATHFINDER_ENDPOINT}
-        CIRCLES_HUB_ADDRESS: ${CONTRACT_ADDRESS_CIRCLES_HUB}
-        SAFE_PROXY_FACTORY_ADDRESS: ${CONTRACT_ADDRESS_SAFE_PROXY_FACTORY}
-        SAFE_ADDRESS: ${CONTRACT_ADDRESS_MASTER_SAFE_COPY}
-        RPC_ENDPOINT: ${EXTERNAL_CHAIN_RPC_URL}
-        OPENLOGIN_CLIENT_ID: ${FRONTEND_OPENLOGIN_CLIENT_ID}
-        HERE_API_KEY: ${FRONTEND_HERE_API_KEY}
-        PLACES_API_KEY: ${FRONTEND_PLACES_API_KEY}
-        I18N_FILE_URL_TEMPLATE: ${FRONTEND_I18N_FILE_URL_TEMPLATE}
-    networks:
-      - internal
-    volumes:
-      - ${PWD}/../../../o-platform:/o-platform
-    healthcheck:
-      test: |
-        curl -s --head http://localhost:8080/bundle.js | head -n 1 | grep "HTTP.*200.*" && echo "File exists and was downloaded successfully" || { echo "File does not exist or could not be downloaded"; exit 1; }
-      interval: 10s
-      timeout: 10m
-      retries: 500
-      start_period: 30s
+  # frontend:
+  #   depends_on:
+  #     - api-server
+  #   restart: unless-stopped
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/frontend-src/Dockerfile
+  #     context: ${PWD}/../../modules/frontend-src
+  #     args:
+  #       API_ENDPOINT: ${FRONTEND_API_ENDPOINT}
+  #       DEFAULT_APP_LANGUAGE: ${FRONTEND_DEFAULT_APP_LANGUAGE}
+  #       CIRCLES_SUBGRAPH_ENDPOINT: ${FRONTEND_CIRCLES_SUBGRAPH_ENDPOINT}
+  #       PATHFINDER_ENDPOINT: ${FRONTEND_PATHFINDER_ENDPOINT}
+  #       CIRCLES_HUB_ADDRESS: ${CONTRACT_ADDRESS_CIRCLES_HUB}
+  #       SAFE_PROXY_FACTORY_ADDRESS: ${CONTRACT_ADDRESS_SAFE_PROXY_FACTORY}
+  #       SAFE_ADDRESS: ${CONTRACT_ADDRESS_MASTER_SAFE_COPY}
+  #       RPC_ENDPOINT: ${EXTERNAL_CHAIN_RPC_URL}
+  #       OPENLOGIN_CLIENT_ID: ${FRONTEND_OPENLOGIN_CLIENT_ID}
+  #       HERE_API_KEY: ${FRONTEND_HERE_API_KEY}
+  #       PLACES_API_KEY: ${FRONTEND_PLACES_API_KEY}
+  #       I18N_FILE_URL_TEMPLATE: ${FRONTEND_I18N_FILE_URL_TEMPLATE}
+  #   networks:
+  #     - internal
+  #   volumes:
+  #     - ${PWD}/../../../o-platform:/o-platform
+  #   healthcheck:
+  #     test: |
+  #       curl -s --head http://localhost:8080/bundle.js | head -n 1 | grep "HTTP.*200.*" && echo "File exists and was downloaded successfully" || { echo "File does not exist or could not be downloaded"; exit 1; }
+  #     interval: 10s
+  #     timeout: 10m
+  #     retries: 500
+  #     start_period: 30s
 
-  minio:
-    image: minio/minio
-    networks:
-      - internal
-    ports:
-      - 9000:9000
-      - 9090:9090
-    healthcheck:
-      test: ["CMD-SHELL", "curl --fail http://localhost:9090"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    volumes:
-      - ${PWD}/.state/minio/data:/export
-      - ${PWD}/.state/minio/.minio:/root/.minio
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-      MINIO_ADDRESS: 0.0.0.0:9000
-    command: server /export  --console-address 0.0.0.0:9090
+  # minio:
+  #   image: minio/minio
+  #   networks:
+  #     - internal
+  #   ports:
+  #     - 9000:9000
+  #     - 9090:9090
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "curl --fail http://localhost:9090"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   volumes:
+  #     - ${PWD}/.state/minio/data:/export
+  #     - ${PWD}/.state/minio/.minio:/root/.minio
+  #   environment:
+  #     MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+  #     MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+  #     MINIO_ADDRESS: 0.0.0.0:9000
+  #   command: server /export  --console-address 0.0.0.0:9090
 
-  minio-init:
-    image: minio/mc
-    depends_on:
-      - minio
-    networks:
-      - internal
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
-      /usr/bin/mc mb myminio/avatar-images;
-      /usr/bin/mc anonymous set download myminio/avatar-images;
-      exit 0;
-      "
+  # minio-init:
+  #   image: minio/mc
+  #   depends_on:
+  #     - minio
+  #   networks:
+  #     - internal
+  #   entrypoint: >
+  #     /bin/sh -c "
+  #     /usr/bin/mc alias set myminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
+  #     /usr/bin/mc mb myminio/avatar-images;
+  #     /usr/bin/mc anonymous set download myminio/avatar-images;
+  #     exit 0;
+  #     "
 
-  caddy:
-    build:
-      dockerfile: ${PWD}/../../modules/caddy-src/Dockerfile
-      context: ${PWD}/../../modules/caddy-src
-    depends_on:
-      - static-content
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    networks:
-      - internal
-    volumes:
-      - ${PWD}/../../modules/caddy-src:/etc/caddy/
-      - ${PWD}/.state/caddy/data:/data
-      - ${PWD}/../../modules/caddy-src/ca-certs:/etc/caddy/ca-certs
+  # caddy:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/caddy-src/Dockerfile
+  #     context: ${PWD}/../../modules/caddy-src
+  #   depends_on:
+  #     - static-content
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #     - "443:443/udp"
+  #   networks:
+  #     - internal
+  #   volumes:
+  #     - ${PWD}/../../modules/caddy-src:/etc/caddy/
+  #     - ${PWD}/.state/caddy/data:/data
+  #     - ${PWD}/../../modules/caddy-src/ca-certs:/etc/caddy/ca-certs
 
-  static-content:
-    image: caddy:latest
-    restart: unless-stopped
-    depends_on:
-      - api-db-init
-    networks:
-      - internal
-    volumes:
-      - ${PWD}/../../modules/static-content/Caddyfile:/etc/caddy/Caddyfile
-      - ${PWD}/.state/static-content/public:/var/www
-      - ${PWD}/../../modules/static-content/index.html:/var/www/index.html
-      - ${PWD}/.state/chain-init/status/addresses.json:/var/www/addresses.json
+  # static-content:
+  #   image: caddy:latest
+  #   restart: unless-stopped
+  #   depends_on:
+  #     - api-db-init
+  #   networks:
+  #     - internal
+  #   volumes:
+  #     - ${PWD}/../../modules/static-content/Caddyfile:/etc/caddy/Caddyfile
+  #     - ${PWD}/.state/static-content/public:/var/www
+  #     - ${PWD}/../../modules/static-content/index.html:/var/www/index.html
+  #     - ${PWD}/.state/chain-init/status/addresses.json:/var/www/addresses.json
 
-  container-monitor:
-    build:
-      dockerfile: ${PWD}/../../modules/container-monitor/Dockerfile
-      context: ${PWD}/../../modules/container-monitor
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    networks:
-      - internal
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+  # container-monitor:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/container-monitor/Dockerfile
+  #     context: ${PWD}/../../modules/container-monitor
+  #   restart: unless-stopped
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - internal
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
 
-  cypress-tests:
-    build:
-      dockerfile: ${PWD}/../../modules/cypress-tests-src/Dockerfile
-      context: ${PWD}/../../modules/cypress-tests-src/
-    network_mode: "host"
-    volumes:
-      - ${PWD}/../../../o-platform-cypress/:/o-platform-cypress/
-      - ${PWD}/.state/static-content/public:/o-platform-cypress/cypress/fixtures/
-    depends_on:
-      caddy:
-        condition: service_started
-      frontend:
-        condition: service_healthy
+  # cypress-tests:
+  #   build:
+  #     dockerfile: ${PWD}/../../modules/cypress-tests-src/Dockerfile
+  #     context: ${PWD}/../../modules/cypress-tests-src/
+  #   network_mode: "host"
+  #   volumes:
+  #     - ${PWD}/../../../o-platform-cypress/:/o-platform-cypress/
+  #     - ${PWD}/.state/static-content/public:/o-platform-cypress/cypress/fixtures/
+  #   depends_on:
+  #     caddy:
+  #       condition: service_started
+  #     frontend:
+  #       condition: service_healthy

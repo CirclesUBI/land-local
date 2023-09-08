@@ -42,7 +42,7 @@ start-compose-project () {
 
 echo "Check and prepare prerequisites"
 clone-repositories
-install-certificate-authority
+# install-certificate-authority
 
 echo "Prepare and enter application runtime mode"
 build-container-images
