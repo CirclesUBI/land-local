@@ -17,6 +17,7 @@
     "@safe-global/safe-core-sdk": "^3.3.1",
     "@safe-global/safe-web3-lib": "^1.9.1",
     "@truffle/contract": "^4.6.13",
+    "@truffle/hdwallet-provider": "^2.1.15",
     "keythereum": "^2.0.0",
     "truffle": "^5.11.3",
     "web3": "^1.8.1"

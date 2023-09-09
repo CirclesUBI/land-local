@@ -10,8 +10,8 @@ COPY ./package-lock.json /app/package-lock.json
 
 WORKDIR /app
 RUN apk add --no-cache python3 make g++ 
-
-RUN npm install
+RUN npm install -g npm@10.0.0 --loglevel verbose
+RUN npm install --loglevel verbose
 
 FROM node:18-alpine as runtime
 COPY --from=dependencies /app /app

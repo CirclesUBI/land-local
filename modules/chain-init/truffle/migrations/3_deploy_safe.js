@@ -38,8 +38,7 @@ module.exports = async function (deployer, network, accounts) {
     .then((result) => result.address?.toLowerCase());
   // addressCollection.masterSafeContract = masterSafeContract ?? "0x5E484da6227AB3BA047121742ee766CC6389db4f".toLowerCase();
 
-  addressCollection.masterSafeContract =
-    masterSafeContract ?? "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf";
+  addressCollection.masterSafeContract = masterSafeContract;
   console.log("Master safe address is:", masterSafeContract);
 
   const proxyFactoryContract = await deployer

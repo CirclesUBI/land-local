@@ -17,7 +17,7 @@ build-container-images () {
     echo Build container images from source
     cd modes/from-source
     set -x
-    docker compose build
+    docker compose build --rm=false .
     set +x
     cd ../..
     }

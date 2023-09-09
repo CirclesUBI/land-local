@@ -10,6 +10,7 @@ const compatibilityFallbackHandler = require("../build/contracts/CompatibilityFa
 const multiSendCallOnlyArtifacts = require("../build/contracts/MultiSendCallOnly.json");
 const { defaultOwnerAccount } = require("./defaultOwnerAccount");
 
+console.log("defaultOwnerAccount: ", defaultOwnerAccount);
 async function getSafeFactory(addresses) {
   const ethAdapter = new Web3Adapter.default({
     web3: web3Instance,
@@ -37,6 +38,7 @@ async function getSafeFactory(addresses) {
   };
 
   console.log("contractNetworks: ", contractNetworks);
+  console.log("ethAdapter: ", ethAdapter);
 
   const factory = await SafeFactory.create({
     ethAdapter: ethAdapter,
