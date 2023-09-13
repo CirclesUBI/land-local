@@ -32,4 +32,4 @@ WORKDIR /nethermind
 # ]
 
 
-ENTRYPOINT ["/bin/sh", "-c", "apt update && apt install -y curl && ./Nethermind.Runner --config spaceneth --log DEBUG --datadir data " ]
+ENTRYPOINT ["/bin/sh", "-c", "apt update && apt install -y curl && ./Nethermind.Runner --config spaceneth --log WARN --datadir data " ]
