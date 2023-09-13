@@ -33,12 +33,24 @@ const MultiSendCallOnly = truffleContract(multiSendCallOnly);
 MultiSendCallOnly.setProvider(web3.currentProvider);
 
 module.exports = async function (deployer, network, accounts) {
-  const masterSafeContract = await deployer
-    .deploy(GnosisSafe, { from: accounts[0] })
-    .then((result) => result.address?.toLowerCase());
-  // addressCollection.masterSafeContract = masterSafeContract ?? "0x5E484da6227AB3BA047121742ee766CC6389db4f".toLowerCase();
+  let masterSafeContract;
 
-  addressCollection.masterSafeContract = masterSafeContract;
+  await deployer
+    .deploy(GnosisSafe, {
+      from: accounts[0],
+    })
+    .then((result) => {
+      masterSafeContract = result;
+    })
+    .catch((error) => {
+      console.log("ERROR GNOSISSAFEPROXY DEPLOYMENT: ", error);
+    });
+
+  console.log("accounts: ", accounts);
+
+  addressCollection.masterSafeContract =
+    masterSafeContract.address.toLowerCase();
+
   console.log("Master safe address is:", masterSafeContract);
 
   const proxyFactoryContract = await deployer

@@ -177,6 +177,7 @@ services:
   #     - ${PWD}/.state/chain-init/status/:/app/status/
 
   nethermind:
+    tty: true
     build:
       dockerfile: ${PWD}/../../modules/nethermind/Dockerfile
       context: ${PWD}/../../modules/nethermind
@@ -232,6 +233,7 @@ services:
       NETHERMIND_JSONRPCCONFIG_HOST: ${NETHERMIND_JSONRPCCONFIG_HOST}
 
   chain-init:
+    tty: true
     depends_on:
       nethermind:
         condition: service_healthy

@@ -1,7 +1,6 @@
 const { web3Instance } = require("./web3instance");
 const { SafeFactory } = require("@safe-global/safe-core-sdk");
 const Web3Adapter = require("@safe-global/safe-web3-lib");
-
 const safeProxyFactoryArtifacts = require("../build/contracts/GnosisSafeProxyFactory.json");
 const safeArtifacts = require("../build/contracts/GnosisSafe.json");
 const multiSendArtifacts = require("../build/contracts/MultiSend.json");
@@ -10,18 +9,16 @@ const compatibilityFallbackHandler = require("../build/contracts/CompatibilityFa
 const multiSendCallOnlyArtifacts = require("../build/contracts/MultiSendCallOnly.json");
 const { defaultOwnerAccount } = require("./defaultOwnerAccount");
 
-console.log("defaultOwnerAccount: ", defaultOwnerAccount);
 async function getSafeFactory(addresses) {
   const ethAdapter = new Web3Adapter.default({
     web3: web3Instance,
     signerAddress: defaultOwnerAccount.address,
   });
 
-  const id = await ethAdapter.getChainId();
-  console.log("SAFE ID: ", id);
+  const chainId = await ethAdapter.getChainId();
 
   const contractNetworks = {
-    [id]: {
+    [chainId]: {
       multiSendAddress: addresses.multiSendContract,
       multiSendAbi: multiSendArtifacts.abi,
       safeMasterCopyAddress: addresses.masterSafeContract,
@@ -37,15 +34,12 @@ async function getSafeFactory(addresses) {
     },
   };
 
-  console.log("contractNetworks: ", contractNetworks);
-  console.log("ethAdapter: ", ethAdapter);
-
-  const factory = await SafeFactory.create({
-    ethAdapter: ethAdapter,
-    contractNetworks: contractNetworks,
+  const safeFactory = await SafeFactory.create({
+    ethAdapter,
+    contractNetworks,
   });
 
-  return factory;
+  return safeFactory;
 }
 
 module.exports = {

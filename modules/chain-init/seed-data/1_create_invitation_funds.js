@@ -6,9 +6,6 @@ const { defaultOwnerAccount } = require("../truffle/lib/defaultOwnerAccount");
 
 module.exports = async function (addresses) {
   const safeFactory = await getSafeFactory(addresses);
-  // const defaultOwnerAccount = await getDefaultOwnerAccount();
-
-  console.log("DEFAULT OWNER ACCOUNT: ", defaultOwnerAccount);
 
   const profileSafe = await safeFactory.deploySafe({
     safeAccountConfig: {
@@ -16,6 +13,7 @@ module.exports = async function (addresses) {
       threshold: 1,
     },
   });
+
   addresses.rootSafeContract = profileSafe.getAddress().toLowerCase();
 
   const orgaSafe = await safeFactory.deploySafe({
@@ -42,8 +40,19 @@ module.exports = async function (addresses) {
     "Sending 100 Eth invitation funds to:",
     invitationFundsSafe.getAddress()
   );
-  await sendFunds(
+
+  sendFunds(
     new Web3.utils.BN("10000000000000000000"),
     invitationFundsSafe.getAddress()
-  );
+  ).then((result) => {
+    console.log(
+      "💖 Successfully funded Safe: ",
+      invitationFundsSafe.getAddress()
+    );
+    console.log("Result of sending funds: ", result);
+    console.log(
+      "🚀 ~ file: 1_create_invitation_funds.js:38 ~ addresses.invitationFundsSafeContract:",
+      addresses.invitationFundsSafeContract
+    );
+  });
 };

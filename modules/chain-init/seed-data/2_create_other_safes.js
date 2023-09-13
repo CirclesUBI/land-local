@@ -2,6 +2,7 @@ const { hubSignup } = require("../truffle/lib/hubSignup");
 const { orgaHubSignup } = require("../truffle/lib/orgaHubSignup");
 const { getSafeFactory } = require("../truffle/lib/getSafeFactory");
 const { defaultOwnerAccount } = require("../truffle/lib/defaultOwnerAccount");
+
 const { trust } = require("../truffle/lib/trust");
 const { mulberry32 } = require("../truffle/lib/mulberry32");
 const util = require("util");
@@ -19,50 +20,67 @@ function createEdges(nodeIds) {
       }
     }
   }
+
   return edges;
 }
 
 module.exports = async function (addresses) {
   const safeFactory = await getSafeFactory(addresses);
-  // const defaultOwnerAccount = await getDefaultOwnerAccount();
-  console.log("DEFAULT OWNER ACCOUNT OTHER SAFES: ", defaultOwnerAccount);
+
   addresses.otherSafes = {};
   addresses.otherOrgaSafes = {};
 
-  console.log("HIER IST SCHONMAL WAS LOS");
+  for (let i = 0; i < 10; i++) {
+    console.log("HIER: ", i);
+    const callback = (txHash) => {
+      console.log({ txHash });
+    };
 
-  for (let i = 0; i < 20; i++) {
-    const newSafe = await safeFactory.deploySafe({
-      safeAccountConfig: {
-        owners: [defaultOwnerAccount.address],
-        threshold: 1,
-      },
-    });
+    const safeAccountConfig = {
+      owners: [defaultOwnerAccount.address],
+      threshold: 1,
+    };
 
-    if (i % 5 === 0) {
-      console.log(
-        `Signing up ${newSafe
-          .getAddress()
-          .toLowerCase()} as organization at the hub ${
-          addresses.hubContract
-        } ..`
-      );
-      await orgaHubSignup(newSafe, addresses.hubContract);
-      addresses.otherOrgaSafes[newSafe.getAddress().toLowerCase()] = newSafe;
-    } else {
-      console.log(
-        `Signing up ${newSafe
-          .getAddress()
-          .toLowerCase()} as person at the hub ${addresses.hubContract} ..`
-      );
-      await hubSignup(newSafe, addresses.hubContract);
-      addresses.otherSafes[newSafe.getAddress().toLowerCase()] = newSafe;
-    }
+    const newSafe = await safeFactory.deploySafe({ safeAccountConfig });
+
+    // if (i % 5 === 0) {
+    //   console.log(
+    //     `Signing up ${newSafe
+    //       .getAddress()
+    //       .toLowerCase()} as organization at the hub ${
+    //       addresses.hubContract
+    //     } ..`
+    //   );
+    //   await orgaHubSignup(newSafe, addresses.hubContract);
+    //   addresses.otherOrgaSafes[newSafe.getAddress().toLowerCase()] = newSafe;
+    // } else {
+    console.log(
+      `Signing up ${newSafe.getAddress().toLowerCase()} as person at the hub ${
+        addresses.hubContract
+      } ..`
+    );
+    // await hubSignup(newSafe, addresses.hubContract);
+    hubSignup(newSafe, addresses.hubContract)
+      .then((result) => {
+        console.log("HUBSIGNUP RESULT: ", result.getAddress().toLowerCase());
+        addresses.otherSafes[newSafe.getAddress().toLowerCase()] = newSafe;
+      })
+      .catch((error) => {
+        console.log("ERROR HUBSIGNUP  ", error);
+      });
+    // }
+    console.log("waiting...");
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    console.log("...done waiting");
   }
+  console.log("DONE Signing up");
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  console.log("Creating Edges...");
 
   const trustEdges = createEdges(Object.keys(addresses.otherSafes));
+
   const trusted = {};
 
   for (let i = 0; i < trustEdges.length; i++) {
@@ -75,12 +93,22 @@ module.exports = async function (addresses) {
     }
 
     const limit = Math.round(50 + limitPrng() * 50);
-    await trust(
+    console.log("🚀 ~ file: 2_create_other_safes.js:104 ~ limit:", limit);
+
+    console.log("Adding Trust for ", userSafe.getAddress().toLowerCase());
+
+    trust(
       canSendToSafe,
       addresses.hubContract,
       userSafe.getAddress().toLowerCase(),
       limit
-    );
+    )
+      .then((result) => {
+        console.log("Trust operation successful: ", result);
+      })
+      .catch((error) => {
+        console.log("Error in trust operation: ", error);
+      });
 
     if (!trusted[edge[0]]) {
       trusted[edge[0]] = [edge[1]];

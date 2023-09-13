@@ -49,7 +49,6 @@
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 const privKeyy =
   "5bc6328efff9fc724aad89edf1356a6ba7bee56368b4b9b47b1f29a5cd6d73c7";
-
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -63,11 +62,14 @@ module.exports = {
 
   networks: {
     development: {
-      from: "0x85a88313b37676ef7F846E00287090E75931E44B",
+      // from: "0x85a88313b37676ef7F846E00287090E75931E44B",
       provider: () => new HDWalletProvider(privKeyy, "http://nethermind:8545"),
       host: "nethermind",
+      // skipDryRun: true,
       port: 8545,
       network_id: "99",
+      gas: 6721975, // Gas limit for development
+      gasPrice: 20000000000, // 20 gwei (in wei) (default: 100 gwei)
     },
   },
 
