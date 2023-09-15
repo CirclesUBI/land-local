@@ -45,12 +45,4 @@ module.exports = async function (addresses) {
     new Web3.utils.BN("10000000000000000000"),
     invitationFundsSafe.getAddress()
   );
-  console.log(
-    "💖 Successfully funded Safe: ",
-    invitationFundsSafe.getAddress()
-  );
-  console.log(
-    "🚀 ~ file: 1_create_invitation_funds.js:38 ~ addresses.invitationFundsSafeContract:",
-    addresses.invitationFundsSafeContract
-  );
 };

@@ -12,7 +12,6 @@ const sendFunds = async function sendFunds(amount, to) {
     value: amount,
     gas: 1000000,
   });
-  console.log("🚀 ~ file: sendFunds.js:12 ~ sendFunds ~ signedTx:", signedTx);
 
   return web3Instance.eth.sendSignedTransaction(signedTx.rawTransaction);
 };

@@ -93,7 +93,7 @@ module.exports = async function (deployer, network, accounts) {
   console.log("SafeProxy address is:", safeProxyContract);
   addressCollection.safeProxyContract = safeProxyContract;
 
-  new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
 
   console.log(" deploy Safe => DEFAULT OWNER ACCOUNT: ", defaultOwnerAccount);
 
@@ -111,25 +111,4 @@ module.exports = async function (deployer, network, accounts) {
       2
     )
   );
-
-  // writeFile(
-  //   "/app/status/addresses.temp.json",
-  //   JSON.stringify(
-  //     { ...addressCollection, network: truffleConfig.networks[network] },
-  //     null,
-  //     2
-  //   )
-  // )
-  //   .then((stats) => {
-  //     console.log(
-  //       "Successfully created /app/status/addresses.temp.json ",
-  //       stats
-  //     );
-  //   })
-  //   .catch((error) => {
-  //     console.log(
-  //       "ERROR whilec creating /app/status/addresses.temp.json ",
-  //       error
-  //     );
-  //   });
 };

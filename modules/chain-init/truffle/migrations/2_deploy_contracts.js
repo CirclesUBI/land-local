@@ -4,6 +4,7 @@ const { addressCollection } = require("../lib/addressCollection");
 
 module.exports = async function (deployer) {
   console.log("Deploying Hub Contract...");
+
   await deployer
     .deploy(
       Hub,
