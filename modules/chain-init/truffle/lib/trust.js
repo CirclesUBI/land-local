@@ -5,22 +5,12 @@ const trust = async function (safe, hubContractAddress, userAddress, limit) {
   const hubAbi = hub.abi;
   const hubInstance = new web3Instance.eth.Contract(hubAbi, hubContractAddress);
   console.log(
-    "🚀 ~ file: trust.js:7 ~ trust ~ hubContractAddress:",
-    hubContractAddress
-  );
-
-  console.log(
     `Trusting .. ${safe.getAddress()} -> ${userAddress} with limit ${limit}`
   );
-
-  const wurst = await hubInstance.methods.trust(userAddress, limit);
-  console.log("🚀 ~ Hub Trust not Encoded ", wurst);
 
   const trustCallData = await hubInstance.methods
     .trust(userAddress, limit)
     .encodeABI();
-
-  console.log("🚀 ~ file: trust.js:18 ~ trust ~ trustCallData:", trustCallData);
 
   const safeTransactionData = {
     to: hubContractAddress,
@@ -28,18 +18,25 @@ const trust = async function (safe, hubContractAddress, userAddress, limit) {
     data: trustCallData,
   };
 
-  const safeTransaction = await safe.createTransaction({
-    safeTransactionData: safeTransactionData,
-    safeTxGas: 10000000,
-  });
+  let safeTransaction;
+  safe
+    .createTransaction({
+      safeTransactionData: safeTransactionData,
+      safeTxGas: 10000000,
+    })
+    .then(async (tx) => {
+      safeTransaction = tx;
+      const executeTxResponse = await safe.executeTransaction(safeTransaction);
 
-  const executeTxResponse = await safe.executeTransaction(safeTransaction);
-
-  console.log(
-    `Trust: ${safe.getAddress()} trusts ${userAddress} with limit ${limit}. Tx hash: ${
-      executeTxResponse.hash
-    }`
-  );
+      console.log(
+        `Trust: ${safe.getAddress()} trusts ${userAddress} with limit ${limit}. Tx hash: ${
+          executeTxResponse.hash
+        }`
+      );
+    })
+    .catch((err) => {
+      console.log("Error while trust createTransaction: ", err);
+    });
 };
 
 module.exports = {

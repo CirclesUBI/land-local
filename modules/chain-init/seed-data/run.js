@@ -4,7 +4,7 @@ const addresses = require("/app/status/addresses.temp.json");
 
 console.log("ADDRESSES:", JSON.stringify(addresses, null, 2));
 
-new Promise((resolve) => setTimeout(resolve, 2))
+new Promise((resolve) => setTimeout(resolve, 200))
   .then(() =>
     _1(addresses)
       .then(() => _2(addresses))

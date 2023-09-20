@@ -13,18 +13,20 @@ const hubSignup = async function (safe, hubContractAddress) {
     data: signupCallData,
   };
 
-  const safeTransaction = await safe.createTransaction({ safeTransactionData });
-  console.log(
-    "🚀 ~ file: hubSignup.js:19 ~ hubSignup ~ safeTransaction:",
-    safeTransaction
-  );
-  const executeTxResponse = await safe.executeTransaction(safeTransaction);
-
-  console.log(
-    `HubSignup for: ${safe.getAddress()}: TxHash: ${executeTxResponse.hash}`
-  );
-
-  return safe;
+  let safeTransaction;
+  safe
+    .createTransaction({ safeTransactionData })
+    .then(async (tx) => {
+      safeTransaction = tx;
+      const executeTxResponse = await safe.executeTransaction(safeTransaction);
+      console.log(
+        `HubSignup for: ${safe.getAddress()}: TxHash: ${executeTxResponse.hash}`
+      );
+      return safe;
+    })
+    .catch((err) => {
+      console.log("🚨🚨 ERROR HUBSIGNUP: ", err);
+    });
 };
 
 module.exports = {

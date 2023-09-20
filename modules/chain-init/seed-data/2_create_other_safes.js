@@ -34,7 +34,7 @@ module.exports = async function (addresses) {
   addresses.otherSafes = {};
   addresses.otherOrgaSafes = {};
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 10; i++) {
     console.log("HIER: ", i);
     const callback = (txHash) => {
       console.log({ txHash });
@@ -47,11 +47,12 @@ module.exports = async function (addresses) {
 
     const newSafe = await safeFactory.deploySafe({ safeAccountConfig });
 
-    if (i % 5 === 0) {
+    // if (i % 2 === 0) {
+    if (i == 3) {
       console.log(
         `Signing up ${newSafe
           .getAddress()
-          .toLowerCase()} as organization at the hub ${
+          .toLowerCase()} as 🎸 ORGANIZATION at the hub ${
           addresses.hubContract
         } ..`
       );
@@ -61,11 +62,9 @@ module.exports = async function (addresses) {
       console.log(
         `Signing up ${newSafe
           .getAddress()
-          .toLowerCase()} as person at the hub ${addresses.hubContract} ..`
+          .toLowerCase()} as 😊 PERSON at the hub ${addresses.hubContract} ..`
       );
-
       await hubSignup(newSafe, addresses.hubContract);
-
       addresses.otherSafes[newSafe.getAddress().toLowerCase()] = newSafe;
     }
     console.log("waiting...");
@@ -90,11 +89,9 @@ module.exports = async function (addresses) {
     if (trusted[edge[0]] && trusted[edge[0]].indexOf(edge[1]) >= 0) {
       continue;
     }
-
+    console.log("🚀 canSendToSafe:", canSendToSafe.getAddress().toLowerCase());
+    console.log("🚀 userSafe:", userSafe.getAddress().toLowerCase());
     const limit = Math.round(50 + limitPrng() * 50);
-
-    console.log("Adding Trust for ", userSafe.getAddress().toLowerCase());
-
     await trust(
       canSendToSafe,
       addresses.hubContract,
@@ -107,6 +104,8 @@ module.exports = async function (addresses) {
     } else {
       trusted[edge[0]].push(edge[1]);
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
   for (let i = 0; i < Object.keys(addresses.otherOrgaSafes).length; i++) {
@@ -119,40 +118,23 @@ module.exports = async function (addresses) {
         .toLowerCase()} trusts all other safes ..`
     );
 
-    console.log(
-      "🚀 ~ file: 2_create_other_safes.js:123 ~ Object.keys(addresses.otherSafes).length:",
-      Object.keys(addresses.otherSafes).length
-    );
-
     for (let j = 0; j < Object.keys(addresses.otherSafes).length; j++) {
       const userSafe =
         addresses.otherSafes[Object.keys(addresses.otherSafes)[j]];
-      console.log(
-        "🚀 ~ file: 2_create_other_safes.js:125 ~ Object.keys(addresses.otherSafes)[j]:",
-        Object.keys(addresses.otherSafes)[j]
-      );
-
-      console.log(
-        "🚀 ~ file: 2_create_other_safes.js:136 ~ orgaSafe:",
-        orgaSafe
-      );
-
-      console.log(
-        "🚀 ~ file: 2_create_other_safes.js:141 ~ userSafe:",
-        userSafe
-      );
-      const limit = Math.round(50 + limitPrng() * 50);
+      console.log("🚀 orgaSafe:", orgaSafe.getAddress().toLowerCase());
+      console.log("🚀 userSafe:", userSafe.getAddress().toLowerCase());
 
       await trust(
         orgaSafe,
         addresses.hubContract,
         userSafe.getAddress().toLowerCase(),
-        limit
+        100
       );
-      // TODO: see if we get the tx receipt first..
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
-
+  await new Promise((resolve) => setTimeout(resolve, 500));
   addresses.otherSafes = Object.keys(addresses.otherSafes).reduce(
     (acc, key) => {
       acc.push(key.toLowerCase());

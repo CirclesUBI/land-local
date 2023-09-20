@@ -13,10 +13,21 @@ const orgaHubSignup = async function (safe, hubContractAddress) {
     data: signupCallData,
   };
 
-  const safeTransaction = await safe.createTransaction({ safeTransactionData });
-  const executeTxResponse = await safe.executeTransaction(safeTransaction);
-  console.log("executeTxResponse:", executeTxResponse);
-  console.log(`OrganizationSignup for: ${safe.getAddress()}`);
+  console.log("🚀  orgaHubSignup ~ safe:", safe.getAddress());
+
+  let safeTransaction;
+  safe
+    .createTransaction({ safeTransactionData })
+    .then(async (tx) => {
+      safeTransaction = tx;
+      const executeTxResponse = await safe.executeTransaction(safeTransaction);
+      console.log("executeTxResponse:", executeTxResponse);
+      console.log(`OrganizationSignup for: ${safe.getAddress()}`);
+      return safe;
+    })
+    .catch((err) => {
+      console.log("🚨🚨 ERROR ORGA HUBSIGNUP: ", err);
+    });
 };
 
 module.exports = {
