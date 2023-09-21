@@ -68,10 +68,7 @@ module.exports = {
       // skipDryRun: true,
       port: 8545,
       network_id: "99",
-      gas: 10000000, // Gas limit for development
-      gasPrice: 100, // 1 gwei (in wei) (default: 100 gwei)
-      maxPriorityFeePerGas: 2000000000, // 2 Gwei
-      maxFeePerGas: 10000000000, // 10 Gwei
+      gas: 6000000,
     },
   },
 

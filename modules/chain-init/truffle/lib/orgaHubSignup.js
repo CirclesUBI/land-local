@@ -11,22 +11,36 @@ const orgaHubSignup = async function (safe, hubContractAddress) {
     to: hubContractAddress,
     value: "0",
     data: signupCallData,
+    safeTxGas: 500000,
+    gas: 10000000,
+    gasLimit: 10000000,
+    gasPrice: 20000,
   };
 
-  console.log("🚀  orgaHubSignup ~ safe:", safe.getAddress());
-
+  console.log(
+    "🧪 Trying to Sign Organization up on the HUB Contract for address:",
+    safe.getAddress()
+  );
   let safeTransaction;
   safe
     .createTransaction({ safeTransactionData })
     .then(async (tx) => {
       safeTransaction = tx;
-      const executeTxResponse = await safe.executeTransaction(safeTransaction);
-      console.log("executeTxResponse:", executeTxResponse);
-      console.log(`OrganizationSignup for: ${safe.getAddress()}`);
-      return safe;
+      safe
+        .executeTransaction(safeTransaction)
+        .then((executeTxResponse) => {
+          console.log(
+            "✅ ✅ OrgaSafe Hub Signup Succeded. Transaction:",
+            executeTxResponse
+          );
+          return safe;
+        })
+        .catch((err) => {
+          console.log("🚨 🚨 ERROR ORGA HUBSIGNUP: ", err);
+        });
     })
     .catch((err) => {
-      console.log("🚨🚨 ERROR ORGA HUBSIGNUP: ", err);
+      console.log("🚨 🚨 ERROR ORGA TRANSACTION: ", err);
     });
 };
 
