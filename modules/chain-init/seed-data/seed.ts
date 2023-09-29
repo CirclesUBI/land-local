@@ -1,12 +1,12 @@
-import { SafeFactory, SafeAccountConfig, Web3Adapter } from '@safe-global/protocol-kit';
-import type { Web3TransactionOptions } from '@safe-global/protocol-kit';
-import HDWalletProvider from '@truffle/hdwallet-provider';
-import generateContractNetworks from './lib/contractNetworks';
-import addresses from '/app/status/addresses.json';
+import { SafeFactory, SafeAccountConfig, Web3Adapter } from "@safe-global/protocol-kit";
+import type { Web3TransactionOptions } from "@safe-global/protocol-kit";
+import HDWalletProvider from "@truffle/hdwallet-provider";
+import generateContractNetworks from "./lib/contractNetworks";
+import addresses from "/app/status/addresses.json";
 
-import Web3 from 'web3';
+import Web3 from "web3";
 
-const rpc_url: string = 'http://nethermind:8545';
+const rpc_url: string = "http://nethermind:8545";
 
 (async (): Promise<void> => {
 	const provider = new HDWalletProvider({
@@ -58,8 +58,14 @@ const rpc_url: string = 'http://nethermind:8545';
 	};
 
 	try {
-		const safeSdk = await safeFactory.deploySafe({ safeAccountConfig, callback });
+		const safeSdk = await safeFactory.deploySafe({
+			safeAccountConfig,
+			callback
+		});
+		const safeAddress = await safeSdk.getAddress();
+
+		console.log("Your Safe has been deployed:", safeAddress);
 	} catch (error) {
-		console.error('Error deploying safe:', error);
+		console.error("Error deploying safe:", error);
 	}
 })();

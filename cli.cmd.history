@@ -28,3 +28,5 @@ trace.transaction('0x563edd8a9321814b772d3a47faa1425bc297bed700464f8d94ce3ce4a9c
 node.switch('http://localhost:8547')
 trace.transaction('0xbbceac97e7cb7ecc19b168f4c52eb0dc7f757826218a825de0c3638f16caeb32')
 trace.transaction('0x41c20b5e89e263e06ea6469d62eb60cf3981e429682ea44022ccc8f0b53b1fc0')
+node.switch('http://localhost:8547')
+trace.transaction('0x563edd8a9321814b772d3a47faa1425bc297bed700464f8d94ce3ce4a9c0fcda')
