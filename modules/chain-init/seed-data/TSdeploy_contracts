@@ -1,0 +1,15 @@
+type Network = 'development';
+import { convertToBaseUnit } from '../truffle/lib/math';
+import { addressCollection } from '../truffle/lib/addressCollection';
+
+module.exports = (artifacts: Truffle.Artifacts, web3: Web3) => {
+	return async (deployer: Truffle.Deployer, network: Network, accounts: string[]) => {
+		const Hub = artifacts.require('Hub');
+
+		await deployer.deploy(Hub, 107, 31556952, 'CRC', 'Circles', convertToBaseUnit(50), '92592592592592', '7776000');
+
+		const hub = await Hub.deployed();
+		addressCollection.hubContract = result.address.toLowerCase();
+		console.log(`Hub Contract deployed at ${hub.address} in network: ${network}.`);
+	};
+};

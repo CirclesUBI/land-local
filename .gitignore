@@ -10,3 +10,12 @@ modules/caddy-src/ca-certs/
 modules/caddy/ca-certs/
 scripts/node_modules/
 
+# truffle
+modules/chain-init/truffle/build
+
+# typechain
+modules/chain-init/truffle/types
+
+# buidler
+modules/chain-init/truffle/artifacts
+modules/chain-init/truffle/cache

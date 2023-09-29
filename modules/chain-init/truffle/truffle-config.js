@@ -46,49 +46,48 @@
 
 // const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-const HDWalletProvider = require("@truffle/hdwallet-provider");
-const privKeyy =
-  "5bc6328efff9fc724aad89edf1356a6ba7bee56368b4b9b47b1f29a5cd6d73c7";
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const privKeyy = '5bc6328efff9fc724aad89edf1356a6ba7bee56368b4b9b47b1f29a5cd6d73c7';
 module.exports = {
-  /**
-   * Networks define how you connect to your ethereum client and let you set the
-   * defaults web3 uses to send transactions. If you don't specify one truffle
-   * will spin up a managed Ganache instance for you on port 9545 when you
-   * run `develop` or `test`. You can ask a truffle command to use a specific
-   * network from the command line, e.g
-   *
-   * $ truffle test --network <network-name>
-   */
+	/**
+	 * Networks define how you connect to your ethereum client and let you set the
+	 * defaults web3 uses to send transactions. If you don't specify one truffle
+	 * will spin up a managed Ganache instance for you on port 9545 when you
+	 * run `develop` or `test`. You can ask a truffle command to use a specific
+	 * network from the command line, e.g
+	 *
+	 * $ truffle test --network <network-name>
+	 */
 
-  networks: {
-    development: {
-      // from: "0x85a88313b37676ef7F846E00287090E75931E44B",
-      provider: () => new HDWalletProvider(privKeyy, "http://nethermind:8545"),
-      host: "nethermind",
-      // skipDryRun: true,
-      port: 8545,
-      network_id: "99",
-      gas: 6000000,
-    },
-  },
+	networks: {
+		development: {
+			// from: "0x85a88313b37676ef7F846E00287090E75931E44B",
+			provider: () => new HDWalletProvider(privKeyy, 'http://nethermind:8545'),
+			host: 'nethermind',
+			// skipDryRun: true,
+			port: 8545,
+			network_id: '99',
+			gas: 6000000
+		}
+	},
 
-  // Set default mocha options here, use special reporters, etc.
-  mocha: {
-    // timeout: 100000
-  },
+	// Set default mocha options here, use special reporters, etc.
+	mocha: {
+		// timeout: 100000
+	},
 
-  // Configure your compilers
-  compilers: {
-    solc: {
-      version: "^0.7.0", // Fetch exact version from solc-bin (default: truffle's version)
-      // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
-      // settings: {          // See the solidity docs for advice about optimization and evmVersion
-      //  optimizer: {
-      //    enabled: false,
-      //    runs: 200
-      //  },
-      //  evmVersion: "byzantium"
-      // }
-    },
-  },
+	// Configure your compilers
+	compilers: {
+		solc: {
+			version: '^0.7.0' // Fetch exact version from solc-bin (default: truffle's version)
+			// docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
+			// settings: {          // See the solidity docs for advice about optimization and evmVersion
+			//  optimizer: {
+			//    enabled: false,
+			//    runs: 200
+			//  },
+			//  evmVersion: "byzantium"
+			// }
+		}
+	}
 };
